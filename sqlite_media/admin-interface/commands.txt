@@ -1,0 +1,3 @@
+python manage.py dumpdata admin_interface.Theme --indent 2 > theme_backup.json
+then open by notepad and save it as utf-8
+python manage.py loaddata theme_backup.json

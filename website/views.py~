@@ -1,0 +1,791 @@
+from rest_framework import viewsets
+from drf_spectacular.utils import extend_schema, OpenApiExample,OpenApiResponse, OpenApiParameter, OpenApiTypes,OpenApiSchemaBase
+from website.throttles import CustomAnonRateThrottle,CustomUserRateThrottle
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter
+from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
+from django.core.files.storage import default_storage
+import os,mimetypes
+from django.conf import settings
+from django.core.paginator import Paginator
+from itertools import chain
+from django.db.models import Q
+from rest_framework.response import Response
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from concurrent.futures import ThreadPoolExecutor
+from website.models import User
+def detect_type(value):
+    if isinstance(value, str):
+        return 'string'
+    elif isinstance(value, bool):
+        return 'boolean'
+    elif isinstance(value, int):
+        return 'integer'
+    elif isinstance(value, float):
+        return 'float'
+    elif isinstance(value, list):
+        return 'list'
+    elif isinstance(value, dict):
+        return 'dict'
+    else:
+        return 'unknown'
+
+def create_spectacular_response(description:str,properties:list):
+    """
+    :param description: response description
+    :param properties: [[key1,value1,type1],[key2,value2,type2]]
+    type : string,boolean,integer,float,list,dict
+    :return: dic of properties
+    """
+    properties_dic = {}
+    for property in properties:
+        properties_dic[property[0]]= {'default': property[1],'type': property[2]}
+    return OpenApiResponse(description=description,response={'type': 'object','properties': properties_dic})
+
+def create_spectacular_response_final(description: str, response: dict or list):
+    """
+    :param description: Response description
+    :param response: Response data (either a list or a dict)
+    :return: Spectacular response
+    """
+    properties = []
+
+    if isinstance(response, dict):
+        # If the response is a dictionary, process it as before
+        for key, value in response.items():
+            properties.append([key, value, detect_type(value)])
+    elif isinstance(response, list):
+        # If the response is a list of dictionaries, process each dictionary element
+        for item in response:
+            if isinstance(item, dict):
+                for key, value in item.items():
+                    properties.append([key, value, detect_type(value)])
+            else:
+                raise ValueError("List items should be dictionaries")
+    else:
+        raise ValueError("Response should be either a dictionary or a list of dictionaries")
+
+    return create_spectacular_response(description, properties)
+def create_spectacular_response_429():
+    return create_spectacular_response_final("Too Many Requests: you can config rate limits parameters in env",{"detail":"Request was throttled. Expected available in n seconds."})
+def create_spectacular_response_401(token_expires=False):
+    if token_expires:
+        return create_spectacular_response_final("Unauthorized: user access token is invalid or expired",{"detail":"Given token not valid for any token type","code":"token_not_valid","messages":[{"token_class":"AccessToken","token_type":"access","message":"Token is invalid or expired"}]})
+    return create_spectacular_response_final("Unauthorized: you can config session_expires parameters in config.yaml",{"detail":"Session Was Expired Please re-login."})
+
+def create_spectacular_response_403():
+    return create_spectacular_response_final("Forbidden: you can config max_active_sessions Field in User",{"detail":"You reached the maximum number of active devices. Please log out from one of them first."})
+
+
+def create_spectacular_parameter(name: str, description: str, type, location: str, required: bool,
+                                 extensions: dict = None, default=None,enum=None):
+    if type == str or type=="str":
+        type = OpenApiTypes.STR
+    elif type == int or type=="int":
+        type = OpenApiTypes.INT
+    elif type == float or type=="float":
+        type = OpenApiTypes.FLOAT
+    elif type == bool or type=="bool":
+        type = OpenApiTypes.BOOL
+    elif type == list:
+        type = OpenApiTypes.LIST
+    elif type == dict or type=="dict":
+        type = OpenApiTypes.OBJECT
+    else:
+        type = OpenApiTypes.STR
+    if location.lower() == "query":
+        location = OpenApiParameter.QUERY
+    elif location.lower() == "header":
+        location = OpenApiParameter.HEADER
+    elif location.lower() == "path":
+        location = OpenApiParameter.PATH
+
+    return OpenApiParameter(name=name, description=description, required=required,
+                            type=type, location=location, extensions=extensions, default=default,enum=enum)
+
+
+def create_spectacular_authentication_parameter():
+    return create_spectacular_parameter(name="Authorization",
+                                           description="user access token(don't use this header in Try it out use jwt auth lock instead)",
+                                           required=False,
+                                           type=str, location="header", extensions={
+                'x-readOnly': True  # Custom extension to mark as read-only
+            },
+                                           default='Bearer access_token', )
+def create_spectacular_content_type_parameter():
+    return create_spectacular_parameter(name="Content-Type", description='what is content type',
+                                                         required=True,
+                                                         type=str, location="header",
+                                                         default='application/json')
+def create_spectacular_id_path_parameter():
+    return create_spectacular_parameter(name="id", description='user id', required=True,
+                     type=int, location=OpenApiParameter.PATH,
+                     )
+def create_spectacular_id_query_parameter(id_query_name,id_query_description,id_query,default):
+    return create_spectacular_parameter(name=id_query_name, description=id_query_description, required=id_query[1],
+                         type=int, location="query",default=default
+                         )
+def create_spectacular_id_query_parameter_str(id_query_name,id_query_description,id_query,default):
+    return create_spectacular_parameter(name=id_query_name, description=id_query_description, required=id_query[1],
+                         type=str, location="query",default=default
+                         )
+def create_spectacular_id_query_parameter_float(id_query_name,id_query_description,id_query,default):
+    return create_spectacular_parameter(name=id_query_name, description=id_query_description, required=id_query[1],
+                         type=float, location="query",default=default
+                         )
+def create_spectacular_id_query_parameter_bool(id_query_name,id_query_description,id_query,default):
+    return create_spectacular_parameter(name=id_query_name, description=id_query_description, required=id_query[1],
+                         type=bool, location="query",default=default
+                         )
+def create_spectacular_pagination_parameters():
+    return [create_spectacular_parameter(name='page_size', description="page_size if you want to allow pagination", required=False,
+                         type=int, location="query"
+                         ),create_spectacular_parameter(name='page', description="page number if you want to get specific page", required=False,
+                         type=int, location="query")]
+def create_spectacular_refresh_db_parameter():
+    return create_spectacular_parameter(name="refresh_db", description="if you want to refresh database records", required= False,
+                         type=bool, location="query",default=False
+                         )
+def create_spectacular_default_parameters(authenticaion=False,id=False,id_query=[False,False],id_query_description='user id',id_query_name="id",default=None,pagination=False,refresh_db=False):
+    parameters = [
+        create_spectacular_content_type_parameter()
+    ]
+    if authenticaion:
+        parameters.append(create_spectacular_authentication_parameter())
+    if id:
+        parameters.append(create_spectacular_id_path_parameter())
+    if id_query[0]:
+        parameters.append(create_spectacular_id_query_parameter(id_query_name, id_query_description, id_query,default))
+
+    if pagination:
+        parameters.extend(create_spectacular_pagination_parameters())
+    if refresh_db:
+        parameters.append(create_spectacular_refresh_db_parameter())
+    return parameters
+
+
+def create_spectacular_default_parameters_string(authenticaion=False,id=False,id_query=[False,True],id_query_description='user id',id_query_name="id",id_query_default=None,pagination=False,refresh_db=False):
+    parameters = [
+        create_spectacular_content_type_parameter()
+    ]
+    if authenticaion:
+        parameters.append(create_spectacular_authentication_parameter())
+    if id:
+        parameters.append(create_spectacular_id_path_parameter())
+    if id_query[0]:
+        parameters.append(create_spectacular_id_query_parameter_str(id_query_name, id_query_description, id_query,id_query_default))
+    if pagination:
+        parameters.extend(create_spectacular_pagination_parameters())
+    if refresh_db:
+        parameters.append(create_spectacular_refresh_db_parameter())
+    return parameters
+def create_spectacular_default_parameters_float(authenticaion=False,id=False,id_query=[False,True],id_query_description='user id',id_query_name="id",id_query_default=None,pagination=False,refresh_db=False):
+    parameters = [
+        create_spectacular_content_type_parameter()
+    ]
+    if authenticaion:
+        parameters.append(create_spectacular_authentication_parameter())
+    if id:
+        parameters.append(create_spectacular_id_path_parameter())
+    if id_query[0]:
+        parameters.append(create_spectacular_id_query_parameter_float(id_query_name, id_query_description, id_query,id_query_default))
+    if pagination:
+        parameters.extend(create_spectacular_pagination_parameters())
+    if refresh_db:
+        parameters.append(create_spectacular_refresh_db_parameter())
+    return parameters
+def create_spectacular_default_parameters_bool(authenticaion=False,id=False,id_query=[False,True],id_query_description='user id',id_query_name="id",id_query_default=None,pagination=False,refresh_db=False):
+    parameters = [
+        create_spectacular_content_type_parameter()
+    ]
+    if authenticaion:
+        parameters.append(create_spectacular_authentication_parameter())
+    if id:
+        parameters.append(create_spectacular_id_path_parameter())
+    if id_query[0]:
+        parameters.append(create_spectacular_id_query_parameter_bool(id_query_name, id_query_description, id_query,id_query_default))
+    if pagination:
+        parameters.extend(create_spectacular_pagination_parameters())
+    if refresh_db:
+        parameters.append(create_spectacular_refresh_db_parameter())
+    return parameters
+
+def get_model_fields(model,search=False):
+    if search:
+        return [field.name for field in model._meta.fields if (hasattr(field, "get_internal_type") and field.get_internal_type() in ["CharField", "TextField"])]
+    else:
+        return [field.name for field in model._meta.fields if not field.name in ["image"]]
+
+from .serializers import (Article,ArticleSerializer,Category,CategorySerializer)
+from .models import (HomeArticle,TeamMember,Team,Footer,NewsletterSubscription,NewsletterSubscriptionMessage,
+Counter,Contact,Testimonial,Collaborator,FrequentlyAskedQuestion,PulseHub,ContactFormSubmission,
+NewsLetter,NewsLetterArticle,
+                     )
+from .forms import ContactForm
+import requests
+def get_category_filterset_fields():
+    category_filterset_fields = {}
+    filterset_fields_list = get_model_fields(Category)
+    for field in filterset_fields_list:
+        if field == 'parent':
+            category_filterset_fields[field] = ['exact', 'isnull']
+        else:
+            category_filterset_fields[field] = ['exact']
+    return category_filterset_fields
+@extend_schema(tags=["1-/category"])
+class CategoryView(viewsets.ReadOnlyModelViewSet):
+    throttle_classes = [CustomUserRateThrottle, CustomAnonRateThrottle]
+    queryset = Category.objects.all().order_by('id')
+    serializer_class = CategorySerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields =  get_category_filterset_fields()
+    search_fields = get_model_fields(Category,search=True)
+    permission_classes = []
+
+    def get_serializer(self, *args, **kwargs):
+        if self.action == 'list':
+            kwargs['without_details'] = True
+        return super().get_serializer(*args, **kwargs)
+#----------------------------------------------------------------------
+@extend_schema(tags=["2-/articles"])
+class ArticleView(viewsets.ReadOnlyModelViewSet):
+    throttle_classes = [CustomUserRateThrottle, CustomAnonRateThrottle]
+    queryset = Article.objects.all().order_by('id')
+    serializer_class = ArticleSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = get_model_fields(Article)
+    search_fields = get_model_fields(Article,search=True)
+    permission_classes = []
+
+    def get_serializer(self, *args, **kwargs):
+        if self.action == 'list':
+            kwargs['without_details'] = True
+        return super().get_serializer(*args, **kwargs)
+
+#------------------media encryption----------------------------------------------------
+
+def serve_signed_media(request, signed_token):
+    """
+    Serve a file from media storage using a signed URL.
+
+    Args:
+        request (HttpRequest): The request object.
+        signed_token (str): The signed token containing the file path.
+
+    Returns:
+        HttpResponse: The file response if valid, or 404 if invalid/expired.
+    """
+    serializer = URLSafeTimedSerializer(settings.SECRET_KEY)
+    try:
+        # Validate the token
+        #file_path = serializer.loads(signed_token, max_age=int(request.GET.get('expires', 3600)))
+        file_path = serializer.loads(signed_token)
+        full_path = os.path.join(settings.MEDIA_ROOT, file_path)
+
+        # Check if the file exists
+        if not os.path.exists(full_path):
+            raise Http404("File not found")
+
+        # Serve the file
+        with open(full_path, 'rb') as file:
+            # Determine the MIME type of the file
+            mime_type, _ = mimetypes.guess_type(full_path)
+            if not mime_type:
+                mime_type = "application/octet-stream"  # Default MIME type
+
+            response = HttpResponse(file.read(), content_type=mime_type)
+            response['Content-Disposition'] = f'inline; filename="{os.path.basename(file_path)}"'
+            return response
+    except (BadSignature, SignatureExpired):
+        raise Http404("Invalid or expired token")
+
+#--------------Frontend--------------------------------------------------------
+from django.http import HttpResponse, Http404
+from django.shortcuts import render,redirect,get_object_or_404
+from django.urls import reverse
+from .forms import NewsletterForm
+def has_article_preview_permission(request,article):
+    if request.user.is_superuser:
+        return True
+    else:
+        if request.user == article.created_by:
+            return True
+        else:
+            return False
+# Index with clients loop
+
+def add_footer(context):
+    try:
+        footer = Footer.objects.all().last()
+        context["footer"] = footer
+    except Footer.DoesNotExist:
+        pass
+def add_navbar_categories(context):
+    try:
+        navbar_categories = Category.objects.get(title="navbar").subcategories.all().order_by("id")
+        context["navbar_categories"] = navbar_categories
+    except Category.DoesNotExist:
+        pass
+    add_footer(context)
+def index(request):
+    context = {}
+    add_navbar_categories(context)
+    try:
+        hero = HomeArticle.objects.filter(type="hero").last()
+        context["hero"] = hero
+    except HomeArticle.DoesNotExist:
+        pass
+    try:
+        about = HomeArticle.objects.filter(type="about").last()
+        context["about"] = about
+    except HomeArticle.DoesNotExist:
+        pass
+    try:
+        news_category = Category.objects.filter(type="news").last()
+        context["news_category"] = news_category
+    except Category.DoesNotExist:
+        pass
+    try:
+        counter = Counter.objects.all().last()
+        context["counter"] = counter
+    except Counter.DoesNotExist:
+        pass
+    try:
+        contact = Contact.objects.all().last()
+        context["contact"] = contact
+    except Contact.DoesNotExist:
+        pass
+    try:
+        pulse_hub_obj = PulseHub.objects.all().last()
+        context["pulse_hub_obj"] = pulse_hub_obj
+    except Contact.DoesNotExist:
+        pass
+    testimonials = Testimonial.objects.all()
+    if testimonials:
+        context["testimonials"] = testimonials
+    collaborators = Collaborator.objects.all()
+    if collaborators:
+        context["collaborators"] = collaborators
+    context["faqlists"] = ["faqlist1", "faqlist2"]
+    frequentlyaskedquestions = FrequentlyAskedQuestion.objects.all()
+    if frequentlyaskedquestions:
+        context["frequentlyaskedquestions"] = frequentlyaskedquestions
+    subscription_code = request.GET.get("subscription-code")
+    if subscription_code:
+        try:
+            code_obj = NewsletterSubscriptionMessage.objects.get(code=subscription_code)
+            context["subscription_message"] = code_obj.message
+            context["subscription_color"] = code_obj.color
+            code_obj.delete()
+        except NewsletterSubscriptionMessage.DoesNotExist:
+            pass
+    send_message_code = request.GET.get("send-message-code")
+    if send_message_code:
+        try:
+            code_obj = NewsletterSubscriptionMessage.objects.get(code=send_message_code)
+            context["send_message_message"] = code_obj.message
+            context["send_message_color"] = code_obj.color
+            code_obj.delete()
+        except NewsletterSubscriptionMessage.DoesNotExist:
+            pass
+    context["newsletter_form"] = NewsletterForm()
+    context["contact_form"] = ContactForm()
+    return render(request, "index.html", context)
+
+# Static pages
+def about(request):
+    return render(request, "pages/about.html")
+
+
+
+def privacy(request):
+    return render(request, "pages/privacy.html")
+
+# Research
+def research(request):
+    context = {}
+    preview_id = request.GET.get("preview_id")
+    if preview_id:
+        preview_id = request.GET.get("preview_id")
+        article = Article.objects.get(id=preview_id)
+        if not has_article_preview_permission(request,article):
+            return redirect(reverse("forbidden"))
+        context["article"] = article
+        context["category"] = article.category
+    else:
+        category_id = request.GET.get("id")
+        if category_id:
+            category = Category.objects.get(id=category_id)
+            context["category"] = category
+            article = category.articles.filter(status="published").last()
+            if not article:
+                return redirect(reverse("not_found"))
+            context["article"] = article
+            context["article_images"] = article.images.all()
+        else:
+            return redirect(reverse("not_found"))
+    add_navbar_categories(context)
+    return render(request, "navbar/research.html", context)
+
+
+
+# Products
+def products(request):
+    context = {}
+    category_id = request.GET.get("id")
+    if category_id:
+        category = Category.objects.get(id=category_id)
+        context["category"] = category
+        if category:
+            products = category.articles.filter(status="published").order_by('-created_at')
+            context["products"] = products
+        else:
+            raise Http404
+    else:
+        return redirect(reverse("not_found"))
+    add_navbar_categories(context)
+    return render(request, "navbar/products.html", context)
+def products_details(request):
+    context = {}
+    preview_id = request.GET.get("preview_id")
+    if preview_id:
+        article_id = preview_id
+    else:
+        article_id = request.GET.get("id")
+    if article_id:
+        if not preview_id:
+            try:
+                article = Article.objects.get(id=article_id,status="published")
+                #article = get_object_or_404(Article,id=article_id,status="published")
+            except Article.DoesNotExist:
+                return redirect(reverse("not_found"))
+        else:
+            article = Article.objects.get(id=article_id)
+            if not has_article_preview_permission(request, article):
+                return redirect(reverse("forbidden"))
+        context["article"] = article
+        sections_with_images = article.sections.filter(image__isnull=False)
+        sections_with_out_images = article.sections.filter(image__isnull=True)
+        context["sections_with_images"] = sections_with_images
+        context["sections_with_out_images"] = sections_with_out_images
+        digital_twin_model = article.digital_twin_model
+        if digital_twin_model and isinstance(digital_twin_model, list) and len(digital_twin_model) <= 6:
+            context["digital_twin_model"] = digital_twin_model
+    else:
+        return redirect(reverse("not_found"))
+    add_navbar_categories(context)
+    add_navbar_categories(context)
+    return render(request, "sub/products_details.html", context)
+# Projects
+def projects(request):
+    return render(request, "pages/proj/projects.html")
+
+def proj_seto(request):
+    return render(request, "pages/proj/SETO.html")
+
+def proj_cloudmate(request):
+    return render(request, "pages/proj/CloudMATE.html")
+
+def proj_nature_demo(request):
+    return render(request, "pages/proj/NATURE_DEMO.html")
+
+def proj_duratrans(request):
+    return render(request, "pages/proj/DURATRANS.html")
+
+def publications(request):
+    return render(request, "pages/proj/publications.html")
+
+# News & Others
+def news(request):
+    context = {}
+    category_id = request.GET.get("id")
+    if category_id:
+        category = Category.objects.get(id=category_id)
+        context["category"] = category
+        if category:
+            news = category.articles.filter(status="published").order_by('-created_at')
+            #pinned_news
+            pinned_recent_news = news.filter(pin=True).order_by('-pin_date')
+            wanted_recent_news_count = 5
+            real_pinned_count = pinned_recent_news.count()
+            if real_pinned_count> wanted_recent_news_count:
+                recent_news = pinned_recent_news[:wanted_recent_news_count]
+            elif real_pinned_count < wanted_recent_news_count:
+                news_without_duplicate = news.exclude(pk__in=pinned_recent_news.values('pk'))
+                recent_news = list(chain(pinned_recent_news, news_without_duplicate[:wanted_recent_news_count - real_pinned_count]))
+            else:
+                recent_news = pinned_recent_news
+            context["recent_news"] = recent_news
+            #end of pinned news
+            # pagination
+            paginator = Paginator(news, 5)  # 5 posts per page
+            page_number = request.GET.get('page')  # ?page=2
+            page_obj = paginator.get_page(page_number)
+            context["news"] = page_obj
+
+
+        else:
+            return redirect(reverse("not_found"))
+    else:
+        return redirect(reverse("not_found"))
+    add_navbar_categories(context)
+    return render(request, "navbar/news.html",context)
+def news_details(request):
+    context = {}
+    preview_id = request.GET.get("preview_id")
+    if preview_id:
+        article_id = preview_id
+    else:
+        article_id = request.GET.get("id")
+
+    if article_id:
+        if not preview_id:
+            try:
+                article = Article.objects.get(id=article_id, status="published")
+            # article = get_object_or_404(Article,id=article_id,status="published")
+            except Article.DoesNotExist:
+                return redirect(reverse("not_found"))
+        else:
+            article = Article.objects.get(id=article_id)
+            if not has_article_preview_permission(request, article):
+                return redirect(reverse("forbidden"))
+        subscriber_id = request.GET.get("subscriber_id")
+        if subscriber_id and subscriber_id != "<subscriber_id>":
+            subscriber = NewsletterSubscription.objects.get(id=subscriber_id)
+            subscriber.articles.add(article)
+            newsletter_id = request.GET.get("newsletter_id")
+            try:
+                if newsletter_id:
+                    NewsLetterArticle.objects.get(
+                        newsletter_id=newsletter_id,
+                        article_id=article_id
+                    ).clickers.add(subscriber_id)
+
+            except Exception as e:
+                print(e)
+
+        context["article"] = article
+        if preview_id:
+            if not has_article_preview_permission(request,article):
+                return redirect(reverse("forbidden"))
+    else:
+        return redirect(reverse("not_found"))
+    add_navbar_categories(context)
+    return render(request, "sub/news_details.html", context)
+def dic_intro(request):
+    return render(request, "navbar/dic-intro.html")
+
+def team(request):
+    return render(request, "pages/team.html")
+
+def qr_generator(request):
+    return render(request, "pages/qr_generator.html")
+
+def not_found(request, exception=None):
+    context = {}
+    add_navbar_categories(context)
+    return render(request, "error/404.html",context, status=404)
+def forbidden(request):
+    context = {}
+    add_navbar_categories(context)
+    return render(request, "error/403.html",context)
+def abuse(request):
+    context = {}
+    add_navbar_categories(context)
+    return render(request, "error/abuse.html",context)
+def teams(request):
+    context = {}
+    category_id = request.GET.get("id")
+    if category_id:
+        category = Category.objects.get(id=category_id)
+        context["category"] = category
+        if category:
+            teams = category.teams.all().order_by('id')
+            context["teams"] = teams
+        else:
+            return redirect(reverse("not_found"))
+    else:
+        return redirect(reverse("not_found"))
+    add_navbar_categories(context)
+    return render(request, "navbar/teams.html", context)
+
+
+def redirect_url(request):
+    context = {}
+    category_id = request.GET.get("id")
+    if category_id:
+        category = Category.objects.get(id=category_id)
+        context["category"] = category
+    else:
+        return redirect(reverse("not_found"))
+    category_url = category.redirect_url
+    if category_url:
+        return redirect(category_url)
+    else:
+        return redirect(reverse("not_found"))
+
+def redirect_article_url(category_article):
+    if category_article.category and category_article.category.type:
+        if category_article.category.type == "research":
+            path = reverse(f"{category_article.category.type}") + f'?id={category_article.id}'
+        else:
+            path = reverse(f"{category_article.category.type}_details") + f'?id={category_article.id}'
+    else:
+        path = "#"
+    return path
+def redirect_article(request):
+    context = {}
+    category_id = request.GET.get("id")
+    if category_id:
+        category = Category.objects.get(id=category_id)
+        context["category"] = category
+    else:
+        return redirect(reverse("not_found"))
+    category_article = category.redirect_article
+
+    if category_article:
+        url = redirect_article_url(category_article)
+        return redirect(url)
+    else:
+        return redirect(reverse("not_found"))
+def redirect_tag_id(request):
+    context = {}
+    category_id = request.GET.get("id")
+    if category_id:
+        category = Category.objects.get(id=category_id)
+        context["category"] = category
+    else:
+        return redirect(reverse("not_found"))
+    category_tag_id = category.redirect_tag_id
+    url = reverse("index")
+    if category_tag_id:
+        url = reverse(f"{category.type}")
+        return redirect(url + f"#{category_tag_id}")
+    else:
+        return redirect(url + f"#")
+
+def subscribe_newsletter(request):
+    if request.method == 'POST':
+        newsletter_form = NewsletterForm(request.POST)
+        if newsletter_form.is_valid():
+            # التحقق من البريد الإلكتروني
+            name = newsletter_form.cleaned_data['name']
+            email = newsletter_form.cleaned_data['email']
+            if NewsletterSubscription.objects.filter(email=email).exists():
+                code_obj = NewsletterSubscriptionMessage.objects.create(message="You have already subscribed to our newsletter",color="#fd0a12")
+                return redirect(f'{reverse("index")}?subscription-code={code_obj.code}#footer')
+            newsletter_form.save()  # حفظ البريد الإلكتروني في قاعدة البيانات
+            code_obj = NewsletterSubscriptionMessage.objects.create(
+                message="You have successfully subscribed to our newsletter", color="#38ac38")
+            return redirect(f'{reverse("index")}?subscription-code={code_obj.code}#footer')
+        else:
+            code_obj = NewsletterSubscriptionMessage.objects.create(
+                message="Invalid email address", color="#fd0a12")
+            return redirect(f'{reverse("index")}?subscription-code={code_obj.code}#footer')
+
+def send_message(from_email,to_email,subject,html_message):
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = from_email
+        msg['To'] = to_email
+        msg['Subject'] = subject
+        body = html_message
+        msg.attach(MIMEText(body, 'html'))
+        server = smtplib.SMTP_SSL(settings.EMAIL_HOST, settings.EMAIL_PORT)
+        server.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
+        #print(msg.as_string())
+        server.send_message(msg)
+        server.quit()
+    except Exception as e:
+        #print(e)
+        pass
+def contact_form(request):
+    if request.method == "POST":
+        contact_form = ContactForm(request.POST)
+        if contact_form.is_valid():
+            # بيانات الفورم
+            name = contact_form.cleaned_data["name"]
+            email = contact_form.cleaned_data["email"]
+            subject = contact_form.cleaned_data["subject"]
+            message = contact_form.cleaned_data["message"]
+
+            # ابعت POST لـ formsubmit.co
+            try:
+                contact_submission_message_subject = settings.CONTACT_SUBMISSION_MESSAGE_SUBJECT
+                message_content = f"""
+                	                    <div class="content" style="padding: 20px;">
+                	                        <p>Here Is Last Contact Form Submission ,</p>
+                	                        <p class="news-title" style="font-size: 24px; font-weight: bold; color: #333;"><strong>Name :</strong> {name}</p>
+                	                        <p class="news-title" style="font-size: 24px; font-weight: bold; color: #333;"><strong>Email :</strong> {email}</p>
+                	                        <p class="news-title" style="font-size: 24px; font-weight: bold; color: #333;"><strong>Subject :</strong> {subject}</p>
+                	                        <p class="news-description" style="font-size: 16px; color: #555; margin-top: 10px;"><strong>Message :</strong> {message}</p>
+                	                    </div>
+                					"""
+                kwarg = {"title": "Contact Submission", "message_content": message_content}
+                html_message = settings.MESSAGE_TEMPLATE.format(**kwarg)
+                contact_form_submission_recipients = User.objects.filter(contact_form_submission_recipient=True)
+                from_email = settings.CONTACT_SUBMISSION_MESSAGE_DEFAULT_FROM_EMAIL
+                with ThreadPoolExecutor() as executor:
+                    futures = [executor.submit(send_message,from_email,contact_form_submission_recipient.email, contact_submission_message_subject, html_message) for
+                               contact_form_submission_recipient
+                               in
+                               contact_form_submission_recipients]
+                ContactFormSubmission.objects.create(name=name, email=email, subject=subject, message=message)
+                code_obj = NewsletterSubscriptionMessage.objects.create(
+                        message="✅ Your message has been sent successfully.", color="#38ac38")
+            except Exception as e:
+                code_obj = NewsletterSubscriptionMessage.objects.create(
+                    message="❌ Error sending request: " + str(e), color="#ff0000")
+
+            return redirect(f'{reverse("index")}?send-message-code={code_obj.code}#contact_form')
+        else:
+            code_obj = NewsletterSubscriptionMessage.objects.create(
+                message="❌ An error occurred while validating your form.", color="#ff0000")
+            return redirect(f'{reverse("index")}?send-message-code={code_obj.code}#contact_form')
+
+def custom_html(request):
+    context = {}
+    category_id = request.GET.get("id")
+    if category_id:
+        category = Category.objects.get(id=category_id)
+        context["category"] = category
+    else:
+        return redirect(reverse("not_found"))
+    custom_html_file = category.custom_html_file
+    if custom_html_file:
+        try:
+            return render(request, custom_html_file.name, context)
+        except Exception as e:
+            return render(request, "error/custom_error.html", {"error_code": 500, "error_message": str(e)})
+    else:
+        return redirect(reverse("not_found"))
+#decrypte media
+from django.http import FileResponse, Http404, HttpResponseForbidden
+import os
+from django.conf import settings
+from core.storage import SignedMediaStorage
+
+# Instantiate the custom storage class
+media_storage = SignedMediaStorage()
+
+
+def secure_media_view(request, b64_token):
+    # Decode the token to get the original file name
+    name = media_storage.decode_name(b64_token)
+
+    if name is None:
+        return HttpResponseForbidden("Invalid or expired link")
+
+    # Build the file path and check if it exists
+    file_path = os.path.join(settings.MEDIA_ROOT, name)
+    if not os.path.exists(file_path):
+        raise Http404("File not found")
+
+    # Return the file response
+    response = FileResponse(open(file_path, "rb"))
+    # Optional: Add cache headers for browser/CDN
+    response["Cache-Control"] = "max-age=604800, public"  # 1 week
+    return response
+

@@ -1,0 +1,86 @@
+"""
+URL configuration for Diginnocent project.
+
+The `urlpatterns` list routes URLs to views. For more information please see:
+    https://docs.djangoproject.com/en/5.2/topics/http/urls/
+Examples:
+Function views
+    1. Add an import:  from my_app import views
+    2. Add a URL to urlpatterns:  path('', views.home, name='home')
+Class-based views
+    1. Add an import:  from other_app.views import Home
+    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
+Including another URLconf
+    1. Import the include() function: from django.urls import include, path
+    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+"""
+from django.contrib import admin
+from website.admin import admin_site
+from django.urls import path,include,re_path
+from django.conf import settings
+from django.conf.urls.static import static
+from website import views
+from django.conf.urls import handler404
+handler404 = "website.views.not_found"
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView,)
+urlpatterns = [
+    #path('dashboard/', admin.site.urls),
+    path('dashboard/', admin_site.urls),
+    #path('api/', include('website.urls')),
+path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+
+    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+#re_path(r'^media/(?P<signed_token>[^/]+)/?$', views.serve_signed_media, name='serve_signed_media'),
+]
+urlpatterns += [
+    path("", views.index, name="index"),
+    path("about/", views.about, name="about"),
+    path("privacy/", views.privacy, name="privacy"),
+    # Research
+    path("research/", views.research, name="research"),
+
+
+    # Products
+    path("products/", views.products, name="products"),
+    path("products_details/", views.products_details, name="products_details"),
+
+
+    # Projects
+    path("projects/", views.projects, name="projects"),
+    path("projects/seto/", views.proj_seto, name="proj_seto"),
+    path("projects/cloudmate/", views.proj_cloudmate, name="proj_cloudmate"),
+    path("projects/nature-demo/", views.proj_nature_demo, name="proj_nature_demo"),
+    path("projects/duratrans/", views.proj_duratrans, name="proj_duratrans"),
+    path("projects/publications/", views.publications, name="publications"),
+
+    # News & Others
+    path("news/", views.news, name="news"),
+    path("news_details/", views.news_details, name="news_details"),
+    path("dic-intro/", views.dic_intro, name="dic-intro"),
+    path("team/", views.team, name="team"),
+    path("qr-generator/", views.qr_generator, name="qr_generator"),
+    path("not_found/", views.not_found, name="not_found"),
+    path("forbidden/", views.forbidden, name="forbidden"),
+    path("abuse/", views.abuse, name="abuse"),
+    path("teams/", views.teams, name="teams"),
+    path("redirect-url/", views.redirect_url, name="redirect_url"),
+    path('redirect_article/', views.redirect_article, name='redirect_article'),
+    path('redirect_tag_id/', views.redirect_tag_id, name='redirect_tag_id'),
+    path('subscribe/', views.subscribe_newsletter, name='subscribe_newsletter'),
+    path('contact_form/', views.contact_form, name='contact_form'),
+
+]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+#secure media
+from website.views import secure_media_view
+urlpatterns += [
+    path('secure-media/<path:b64_token>', secure_media_view, name='secure_media'),
+]
+from django.conf.urls.i18n import i18n_patterns
+urlpatterns += i18n_patterns(
+    path('set_language/', include('django.conf.urls.i18n')),
+)

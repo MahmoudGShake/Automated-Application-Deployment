@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  web:
+    build: .
+    container_name: diginnocent
+    env_file:
+      - .env
+    ports:
+      - "80:8000"
+    volumes:
+      - ./media:/app/media
+      - ./static:/app/static
+      - ./db.sqlite3:/app/db.sqlite3  # مهم لحفظ قاعدة البيانات خارج الحاوية
