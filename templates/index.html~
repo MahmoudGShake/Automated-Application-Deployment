@@ -1,0 +1,109 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Digital InnoCent</title>
+  <meta content="..." name="description">
+  <meta content="..." name="keywords">
+
+  <!-- Favicons -->
+  <link href="{% static 'assets/img/favicon.png' %}" rel="icon">
+  <link href="{% static 'assets/img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+  
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="Digital InnoCent - Innovation & Sustainability Leaders | Advanced Materials & SHM" />
+  <meta property="og:description" content="Digital InnoCent (DIC) is a dynamic company transforming cutting-edge ideas into game-changing innovations. Leading research in sustainability, advanced materials, and digitalization solutions." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="{% url 'index' %}" />
+  <meta property="og:image" content="{% static 'assets/img/logo.jpg' %}" />
+  <meta property="og:site_name" content="Digital InnoCent" />
+
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Digital InnoCent - Innovation & Sustainability Leaders | Advanced Materials & SHM" />
+  <meta name="twitter:description" content="Digital InnoCent (DIC) is a dynamic company transforming cutting-edge ideas into game-changing innovations. Leading research in sustainability, advanced materials, and digitalization solutions." />
+  <meta name="twitter:image" content="{% static 'assets/img/logo.jpg' %}" />
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Digital InnoCent",
+    "alternateName": "DIC",
+    "url": "{% url 'index' %}",
+    "logo": "{% static 'assets/img/logo.jpg' %}",
+    "description": "Digital InnoCent s.r.o. is a dynamic and visionary company that transforms cutting-edge ideas into game-changing innovations that meet society's needs and surpass market demands.",
+    "foundingDate": "2020",
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "CZ"
+    },
+    "sameAs": [
+      "https://www.linkedin.com/company/diginnocent-s-r-o/"
+    ],
+    "knowsAbout": [
+      "Digitalization",
+      "Sustainability", 
+      "Advanced Materials",
+      "Structural Health Monitoring",
+      "Artificial Intelligence",
+      "Machine Learning"
+    ]
+  }
+  </script>
+
+  <!-- Favicons -->
+  <link href="{% static 'assets/img/favicon.png' %}" rel="icon">
+  <link href="{% static 'assets/img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+  <!-- Google Fonts - Optimized Loading -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'assets/vendor/aos/aos.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/remixicon/remixicon.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+
+  <!-- Main CSS -->
+  <link href="{% static 'assets/css/style.css' %}" rel="stylesheet">
+</head>
+
+<body>
+  <!-- Header -->
+  {% include 'partials/header.html' %}
+  {% if hero %}
+      <!-- Hero Section -->
+      {% include 'partials/hero.html' %}
+      <!-- End Hero -->
+  {% endif %}
+  <!-- Main Content -->
+  {% include 'partials/main.html' %}
+  <!-- End Main Content -->
+
+  <!-- Footer -->
+  {% include 'partials/footer.html' %}
+
+  <!-- Vendor JS -->
+  <script src="{% static 'assets/vendor/purecounter/purecounter_vanilla.js' %}"></script>
+  <script src="{% static 'assets/vendor/aos/aos.js' %}"></script>
+  <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/glightbox/js/glightbox.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/swiper/swiper-bundle.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/php-email-form/validate.js' %}"></script>
+
+  <!-- Main JS -->
+  <script src="{% static 'assets/js/main.js' %}"></script>
+
+</body>
+</html>

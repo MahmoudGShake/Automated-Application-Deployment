@@ -1,0 +1,132 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DIC Company Presentation</title>
+
+  <!-- Tailwind & FontAwesome -->
+  <link href="{% static 'assets/css/tailwind.min.css' %}" rel="stylesheet" />
+  <link href="{% static 'assets/css/fontawesome.min.css' %}" rel="stylesheet" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com/" />
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    body { font-family: "Montserrat", sans-serif; margin: 0; padding: 0; }
+    .slide-container { width: 100%; min-height: 100vh; margin: 0 auto; }
+    .slide { display: none; min-height: 100vh; }
+    .slide.active { display: block; }
+    .nav-buttons { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; }
+    .nav-button { padding: 10px 20px; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="slides">
+
+      <!-- Slide 1 -->
+      <div id="slide1" class="slide active">
+        <div class="slide-content p-16 text-center">
+          <a href="{% url 'index' %}">
+            <img src="{% static 'assets/img/logo.svg' %}" alt="DIC Logo" class="logo mb-8 w-40 mx-auto"/>
+          </a>
+          <h1 class="text-5xl font-bold text-gray-800 mb-4">
+            Digital Innovation Centre
+          </h1>
+          <p class="text-xl text-gray-600">
+            Driving progress through digitalisation and sustainability
+          </p>
+        </div>
+      </div>
+
+      <!-- Slide 2 -->
+      <div id="slide2" class="slide">
+        <div class="slide-content p-16">
+          <h1 class="text-4xl font-bold mb-6">ABOUT US</h1>
+          <p class="text-lg text-gray-600">
+            Digital Innovation Centre (DIC) transforms cutting-edge ideas into solutions. 
+            Founded in the UK and Czech Republic, DIC provides multidisciplinary R&D to address global challenges.
+          </p>
+          <img src="{% static 'assets/img/DIC_digital.png' %}" alt="About DIC" class="mt-6 w-96"/>
+        </div>
+      </div>
+
+      <!-- Slide 3 -->
+      <div id="slide3" class="slide">
+        <div class="slide-content p-16">
+          <h1 class="text-4xl font-bold mb-6">OUR VISION</h1>
+          <p class="text-lg text-gray-600">
+            We unleash the power of innovation to overcome complex challenges and 
+            drive sustainability forward.
+          </p>
+          <blockquote class="mt-6 text-xl italic text-gray-800">
+            "We unleash the power of innovation to overcome complex challenges and drive sustainability progress forward!"  
+            <br>— Dr. Mohamed Eldessouki, Founder
+          </blockquote>
+        </div>
+      </div>
+
+      <!-- Slide 4 -->
+      <div id="slide4" class="slide">
+        <div class="slide-content p-16">
+          <h1 class="text-4xl font-bold mb-6">OUR COMMITMENT</h1>
+          <p class="text-lg text-gray-600">
+            We are committed to the United Nations Sustainability Development Goals (SDGs) and integrate them in all our projects.
+          </p>
+          <img src="{% static 'assets/img/UN_SDG.png' %}" alt="UN SDGs" class="mt-6 w-2/3 mx-auto"/>
+        </div>
+      </div>
+
+      <!-- Slide 5 -->
+      <div id="slide5" class="slide">
+        <div class="slide-content p-16">
+          <h1 class="text-4xl font-bold mb-6">OUR COLLABORATORS</h1>
+          <p class="text-lg text-gray-600">
+            We collaborate with international companies, local enterprises, universities, and research institutes to achieve impactful results.
+          </p>
+          <div class="grid grid-cols-3 gap-4 mt-6">
+            <img src="{% static 'assets/img/clients/client-1.png' %}" alt="Client 1"/>
+            <img src="{% static 'assets/img/clients/client-2.png' %}" alt="Client 2"/>
+            <img src="{% static 'assets/img/clients/client-3.png' %}" alt="Client 3"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 6 -->
+      <div id="slide6" class="slide">
+        <div class="slide-content p-16 text-center">
+          <h1 class="text-4xl font-bold mb-6">STAY CONNECTED</h1>
+          <p class="text-lg text-gray-600">Read our latest <a href="{% url 'news' %}" class="text-blue-600">news</a>, explore our <a href="{% url 'projects' %}" class="text-blue-600">projects</a>, and browse our <a href="{% url 'publications' %}" class="text-blue-600">publications</a>.</p>
+          <div class="mt-8 flex justify-center gap-6">
+            <a href="https://www.linkedin.com/company/diginnocent-s-r-o/" class="text-blue-700"><i class="fab fa-linkedin fa-2x"></i></a>
+            <a href="mailto:research@diginnocent.com" class="text-red-600"><i class="fas fa-envelope fa-2x"></i></a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-buttons">
+      <button onclick="prevSlide()" class="nav-button bg-gray-700 text-white">Previous</button>
+      <button onclick="nextSlide()" class="nav-button bg-green-600 text-white">Next</button>
+    </div>
+  </div>
+
+  <script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll(".slide");
+    function showSlide(index) {
+      slides.forEach((s, i) => s.classList.toggle("active", i === index));
+      currentSlide = index;
+    }
+    function nextSlide() { showSlide((currentSlide + 1) % slides.length); }
+    function prevSlide() { showSlide((currentSlide - 1 + slides.length) % slides.length); }
+  </script>
+</body>
+</html>

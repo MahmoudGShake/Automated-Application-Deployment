@@ -1,0 +1,247 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>DIC's QR Code Generator</title>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+
+    <!-- QRCodeJS -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+    <!-- Favicons -->
+    <link href="{% static 'assets/img/favicon.png' %}" rel="icon" />
+    <link href="{% static 'assets/img/apple-touch-icon.png' %}" rel="apple-touch-icon" />
+
+    <!-- Main CSS -->
+    <link href="{% static 'assets/css/style.css' %}" rel="stylesheet" />
+
+    <style>
+        * { box-sizing: border-box; font-family: Arial, sans-serif; }
+        body { background: #f5f5f5; margin: 0; padding: 20px; }
+        .container {
+            max-width: 600px; margin: 20px auto; padding: 30px;
+            background: white; border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .controls { margin-bottom: 30px; }
+        .input-group { margin-bottom: 15px; }
+        .color-group { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .color-input { display: flex; align-items: center; gap: 10px; }
+        .color-preview { width: 30px; height: 30px; border: 1px solid #ddd; border-radius: 5px; }
+        .qr-display { display: flex; flex-direction: column; align-items: center; margin-top: 20px; }
+        #qrcode {
+            padding: 20px; background: white; border-radius: 10px;
+            position: relative; display: inline-block;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .logo {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px; height: 40px;
+            background: white; padding: 5px; border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .dic_logo { width: 20em; }
+        select, input, button {
+            padding: 10px 15px; margin: 5px;
+            border-radius: 5px; border: 1px solid #ddd;
+            font-size: 14px; width: 100%; max-width: 300px;
+        }
+        input[type="color"] { padding: 2px; width: 50px; height: 35px; cursor: pointer; }
+        button { background: #2F6E45; color: white; border: none; cursor: pointer; transition: background 0.3s; }
+        button:hover { background: #254E33; }
+        .download-btn { margin-top: 20px; background: #4a4a4a; }
+        .download-btn:hover { background: #333333; }
+        .error { color: red; font-size: 14px; margin-top: 5px; display: none; }
+        .color-label { font-size: 14px; min-width: 80px; }
+        .hex-input { max-width: 100px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{% url 'index' %}">
+            <img src="{% static 'assets/img/DIC_Logo_named.png' %}" alt="DIC Logo" class="dic_logo">
+        </a>
+        <h1>QR Code Generator</h1>
+        <p>
+          Generate QR codes for websites, profiles, or email addresses with your custom colors.
+        </p>
+
+        <!-- Controls -->
+        <div class="controls">
+            <div class="input-group">
+                <select id="qrType" onchange="updateInputPlaceholder()">
+                    <option value="website">Website URL</option>
+                    <option value="linkedin">LinkedIn Profile</option>
+                    <option value="github">GitHub Profile</option>
+                    <option value="youtube">YouTube Channel</option>
+                    <option value="twitter">X (Twitter) Profile</option>
+                    <option value="email">Email Address</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <input type="text" id="url" placeholder="Enter URL">
+                <div id="error" class="error">Please enter a valid input</div>
+            </div>
+            <div class="color-group">
+                <div class="color-input">
+                    <span class="color-label">QR Color:</span>
+                    <input type="color" id="qrColor" value="#2F6E45" onchange="updateColorInputs('qr')">
+                    <input type="text" id="qrColorHex" class="hex-input" value="#2F6E45" oninput="updateColorPicker('qr')" placeholder="Hex color">
+                    <div class="color-preview" id="qrColorPreview" style="background-color: #2F6E45"></div>
+                </div>
+            </div>
+            <div class="color-group">
+                <div class="color-input">
+                    <span class="color-label">Background:</span>
+                    <input type="color" id="bgColor" value="#FFFFFF" onchange="updateColorInputs('bg')">
+                    <input type="text" id="bgColorHex" class="hex-input" value="#FFFFFF" oninput="updateColorPicker('bg')" placeholder="Hex color">
+                    <div class="color-preview" id="bgColorPreview" style="background-color: #FFFFFF"></div>
+                </div>
+            </div>
+            <button onclick="generateQR()">Generate QR Code</button>
+        </div>
+
+        <!-- QR Output -->
+        <div class="qr-display">
+            <div id="qrcode"></div>
+            <button onclick="downloadQR()" class="download-btn" id="downloadBtn" style="display:none;">
+                Download QR Code
+            </button>
+        </div>
+    </div>
+
+    <!-- JS -->
+    <script>
+        const logoUrls = {
+            website: 'https://cdn-icons-png.flaticon.com/512/1006/1006771.png',
+            linkedin: 'https://cdn-icons-png.flaticon.com/512/174/174857.png',
+            twitter: 'https://cdn-icons-png.flaticon.com/512/733/733579.png',
+            github: 'https://cdn-icons-png.flaticon.com/512/733/733553.png',
+            youtube: 'https://cdn-icons-png.flaticon.com/512/1384/1384060.png',
+            email: 'https://cdn-icons-png.flaticon.com/512/732/732200.png'
+        };
+
+        function isValidHexColor(color) {
+            return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color);
+        }
+
+        function updateColorInputs(type) {
+            const colorPicker = document.getElementById(`${type}Color`);
+            const hexInput = document.getElementById(`${type}ColorHex`);
+            const preview = document.getElementById(`${type}ColorPreview`);
+            hexInput.value = colorPicker.value.toUpperCase();
+            preview.style.backgroundColor = colorPicker.value;
+        }
+
+        function updateColorPicker(type) {
+            const colorPicker = document.getElementById(`${type}Color`);
+            const hexInput = document.getElementById(`${type}ColorHex`);
+            const preview = document.getElementById(`${type}ColorPreview`);
+            let color = hexInput.value;
+            if (!color.startsWith('#')) { color = '#' + color; }
+            if (isValidHexColor(color)) {
+                colorPicker.value = color;
+                preview.style.backgroundColor = color;
+            }
+        }
+
+        function updateInputPlaceholder() {
+            const type = document.getElementById('qrType').value;
+            const input = document.getElementById('url');
+            const placeholders = {
+                website: 'Enter website URL (e.g., https://www.diginnocent.com)',
+                linkedin: 'Enter LinkedIn profile URL',
+                github: 'Enter GitHub profile URL',
+                youtube: 'Enter YouTube channel URL',
+                twitter: 'Enter X (Twitter) profile URL',
+                email: 'Enter email address'
+            };
+            input.placeholder = placeholders[type];
+        }
+
+        function validateInput(type, input) {
+            const patterns = {
+                website: /^https?:\/\/.+/i,
+                linkedin: /^https?:\/\/(www\.)?linkedin\.com\/.+/i,
+                github: /^https?:\/\/(www\.)?github\.com\/.+/i,
+                youtube: /^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\/.+/i,
+                twitter: /^https?:\/\/(www\.)?twitter\.com\/.+/i,
+                email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+            };
+            return patterns[type].test(input);
+        }
+
+        function generateQR() {
+            const type = document.getElementById('qrType').value;
+            let input = document.getElementById('url').value;
+            const errorDiv = document.getElementById('error');
+
+            if (!validateInput(type, input)) {
+                errorDiv.style.display = 'block'; return;
+            }
+            errorDiv.style.display = 'none';
+
+            if (type === 'email' && !input.startsWith('mailto:')) {
+                input = 'mailto:' + input;
+            }
+
+            document.getElementById('qrcode').innerHTML = '';
+            const qrColor = document.getElementById('qrColor').value;
+            const bgColor = document.getElementById('bgColor').value;
+
+            new QRCode(document.getElementById('qrcode'), {
+                text: input, width: 200, height: 200,
+                colorDark: qrColor, colorLight: bgColor,
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            setTimeout(() => {
+                const logo = document.createElement('img');
+                logo.src = logoUrls[type]; logo.className = 'logo';
+                document.getElementById('qrcode').appendChild(logo);
+                document.getElementById('downloadBtn').style.display = 'block';
+            }, 100);
+        }
+
+        function downloadQR() {
+            const qrCanvas = document.querySelector('#qrcode canvas');
+            if (!qrCanvas) return;
+
+            const tempCanvas = document.createElement('canvas');
+            const ctx = tempCanvas.getContext('2d');
+            tempCanvas.width = qrCanvas.width; tempCanvas.height = qrCanvas.height;
+            ctx.fillStyle = document.getElementById('bgColor').value;
+            ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            ctx.drawImage(qrCanvas, 0, 0);
+
+            const logo = document.querySelector('.logo');
+            if (logo) {
+                const logoImg = new Image();
+                logoImg.crossOrigin = "anonymous";
+                logoImg.onload = function() {
+                    const logoSize = 40;
+                    const logoX = (tempCanvas.width - logoSize) / 2;
+                    const logoY = (tempCanvas.height - logoSize) / 2;
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.beginPath();
+                    ctx.arc(logoX + logoSize/2, logoY + logoSize/2, logoSize/2, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize);
+
+                    try {
+                        const dataUrl = tempCanvas.toDataURL('image/png');
+                        const link = document.createElement('a');
+                        link.download = 'qrcode.png'; link.href = dataUrl;
+                        document.body.appendChild(link); link.click(); document.body.removeChild(link);
+                    } catch (e) { alert('Failed to download QR code.'); }
+                };
+                logoImg.src = logo.src;
+            }
+        }
+        updateInputPlaceholder();
+    </script>
+    </script>
+</body>
+</html>

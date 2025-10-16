@@ -1,0 +1,115 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+
+  <title>Warning | Restricted Access</title>
+
+  <!-- Vendor CSS -->
+  <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" />
+  <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet" />
+  <link href="{% static 'assets/vendor/aos/aos.css' %}" rel="stylesheet" />
+  <link href="{% static 'assets/css/style.css' %}" rel="stylesheet" />
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #ffcc00 0%, #ff4b2b 100%);
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+    }
+    .warning-page {
+      min-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .warning-page h1 {
+      font-size: 6rem;
+      font-weight: 900;
+      margin-bottom: 10px;
+      color: #ffeb3b;
+      animation: bounce 2s infinite;
+      text-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    .warning-page h2 {
+      font-size: 2rem;
+      margin-bottom: 15px;
+    }
+    .warning-page p {
+      max-width: 600px;
+      font-size: 1.1rem;
+      opacity: 0.95;
+      margin-bottom: 25px;
+    }
+    .proceed-btn a {
+      padding: 14px 35px;
+      border-radius: 50px;
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 1.1rem;
+      color: #fff;
+      background: #d32f2f;
+      transition: 0.3s;
+    }
+    .proceed-btn a:hover {
+      background: #b71c1c;
+      transform: translateY(-3px);
+    }
+    /* floating shapes */
+    .circle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      animation: floatShape 12s linear infinite;
+    }
+    .circle.small { width: 60px; height: 60px; left: 10%; bottom: -80px; }
+    .circle.medium { width: 120px; height: 120px; right: 15%; bottom: -120px; }
+    .circle.large { width: 200px; height: 200px; left: 50%; bottom: -200px; }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+    @keyframes floatShape {
+      0% { transform: translateY(0) rotate(0deg); opacity: 0.3; }
+      50% { transform: translateY(-200px) rotate(180deg); opacity: 0.8; }
+      100% { transform: translateY(0) rotate(360deg); opacity: 0.3; }
+    }
+  </style>
+</head>
+<body>
+  {% include 'partials/header.html' %}
+
+  <main id="main">
+    <section class="warning-page" data-aos="zoom-in">
+      <!-- floating shapes -->
+      <div class="circle small"></div>
+      <div class="circle medium"></div>
+      <div class="circle large"></div>
+
+      <h1>⚠️</h1>
+      <h2>Warning: Restricted Access</h2>
+      <p>Don’t abuse the website.<br/>
+         You can’t go to this page directly — you must use the proper button to get here.</p>
+      <div class="proceed-btn">
+        <a href="{% url 'index' %}"><i class="bi bi-check-circle-fill"></i> Proceed</a>
+      </div>
+    </section>
+  </main>
+
+  {% include 'partials/footer.html' %}
+
+  <!-- Vendor JS -->
+  <script src="{% static 'assets/vendor/aos/aos.js' %}"></script>
+  <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script>
+    AOS.init();
+  </script>
+</body>
+</html>

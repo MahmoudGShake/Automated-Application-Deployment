@@ -1,0 +1,166 @@
+@admin.register(NewsLetter, site=admin_site)
+class NewsLetterAdmin(admin.ModelAdmin):
+    inlines = [NewsLetterArticleInline]
+    readonly_fields = ('newsletter_preview_section', 'newsletter_statistics_section')
+
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = super().get_fieldsets(request, obj)
+        if obj:
+            fieldsets += (
+                ('Newsletter', {
+                    'classes': ('tab',),
+                    'fields': ('newsletter_preview_section', 'newsletter_statistics_section'),
+                }),
+            )
+        return fieldsets
+
+    def newsletter_preview_section(self, obj):
+        """عرض معاينة النشرة داخل card بنفس شكل القالب"""
+        if not obj or not obj.pk:
+            return "(Preview not available until the newsletter is saved.)"
+
+        preview_html = send_newsletter_message(None, obj, preview=True)
+
+        return mark_safe(f"""
+        <div class="card mt-4">
+          <div class="card-header">
+            <h4>👁 Newsletter Preview</h4>
+          </div>
+          <div class="card-body" style="width: 100%; max-width: 1000px; margin: 0 auto;">
+            {preview_html}
+          </div>
+        </div>
+        """)
+
+    newsletter_preview_section.short_description = ""
+    newsletter_preview_section.allow_tags = True
+
+    def newsletter_statistics_section(self, obj):
+        """عرض الرسم البياني داخل card بنفس شكل القالب"""
+        if not obj or not obj.pk:
+            return "(Statistics not available until the newsletter is saved.)"
+
+        newsletter = obj
+        articles = newsletter.articles.all()
+        labels = [f"{article.id} - {article.title}" for article in articles]
+        values = []
+        for article in articles:
+            try:
+                clickers = NewsLetterArticle.objects.get(
+                    newsletter_id=newsletter.id,
+                    article_id=article.id
+                ).clickers
+                values.append(clickers.all().count() if clickers else 0)
+            except NewsLetterArticle.DoesNotExist:
+                values.append(0)
+
+        return mark_safe(f"""
+        <div class="card-header">
+          <h4>📊 Newsletter Statistics</h4>
+        </div>
+        <div class="card-body" style="width: 100%; max-width: 1000px; margin: 0 auto;">
+          <canvas id="newsletterChart" style="height: 400px; width: 200%;"></canvas>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+          document.addEventListener('DOMContentLoaded', () => {{
+            const ctx = document.getElementById('newsletterChart').getContext('2d');
+            const labels = {labels};
+            const values = {values};
+
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (isDarkMode) {{
+              gradient.addColorStop(0, 'rgba(54, 162, 235, 0.8)');
+              gradient.addColorStop(1, 'rgba(54, 162, 235, 0.2)');
+            }} else {{
+              gradient.addColorStop(0, 'rgba(54, 162, 235, 0.6)');
+              gradient.addColorStop(1, 'rgba(54, 162, 235, 0.05)');
+            }}
+
+            new Chart(ctx, {{
+              type: 'bar',
+              data: {{
+                labels: labels,
+                datasets: [
+                  {{
+                    type: 'bar',
+                    label: 'Clickers',
+                    data: values,
+                    backgroundColor: gradient,
+                    borderRadius: 8,
+                    barThickness: 'flex',
+                    maxBarThickness: 40,
+                  }},
+                  {{
+                    type: 'line',
+                    label: 'Trend',
+                    data: values,
+                    borderColor: isDarkMode ? '#00e4ff' : '#007bff',
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.35,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: isDarkMode ? '#00e4ff' : '#007bff',
+                  }}
+                ]
+              }},
+              options: {{
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {{
+                  mode: 'index',
+                  intersect: false,
+                }},
+                animation: {{
+                  duration: 1200,
+                  easing: 'easeOutQuart'
+                }},
+                plugins: {{
+                  legend: {{
+                    labels: {{
+                      color: isDarkMode ? '#ddd' : '#333',
+                      font: {{ size: 13 }}
+                    }}
+                  }},
+                  tooltip: {{
+                    backgroundColor: isDarkMode ? '#222' : '#fff',
+                    titleColor: isDarkMode ? '#fff' : '#000',
+                    bodyColor: isDarkMode ? '#fff' : '#000',
+                    borderColor: isDarkMode ? '#444' : '#ddd',
+                    borderWidth: 1,
+                    padding: 10,
+                    displayColors: true,
+                  }}
+                }},
+                scales: {{
+                  x: {{
+                    ticks: {{
+                      color: isDarkMode ? '#ccc' : '#333',
+                      font: {{ size: 12 }}
+                    }},
+                    grid: {{
+                      display: false
+                    }}
+                  }},
+                  y: {{
+                    beginAtZero: true,
+                    ticks: {{
+                      stepSize: 1,
+                      color: isDarkMode ? '#ccc' : '#333'
+                    }},
+                    grid: {{
+                      color: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'
+                    }}
+                  }}
+                }}
+              }}
+            }});
+          }});
+        </script>
+        """)
+
+    newsletter_statistics_section.short_description = ""
+    newsletter_statistics_section.allow_tags = True

@@ -1,0 +1,460 @@
+{% load static %}
+{% load custom_tags %}
+
+<main id="main">
+
+  <!-- ======= About Section ======= -->
+{% if about %}
+  <section id="about" class="about">
+    <div class="container" data-aos="fade-up" data-aos-duration="400">
+      <div class="row gx-0">
+        <div class="col-lg-6 d-flex align-items-center" data-aos="zoom-out" data-aos-delay="200">
+            {% if about.image %}
+          <img src="{{ about.image.url }}" class="img-fluid" alt="{{ about.image_alternative_text }}">
+            {% endif %}
+        </div>
+        <div class="col-lg-6 d-flex flex-column justify-content-center" data-aos="fade-up" data-aos-delay="200">
+          <div class="content">
+            <h1>{{ about.h1_text }}</h1>
+            <h2>
+              {{ about.h2_text }}
+            </h2>
+            <p>
+              {{ about.processed_p_text|safe }}
+            </p>
+            <div class="text-center text-lg-start">
+              <a href="{{ about.button_link }}" class="btn-read-more d-inline-flex align-items-center justify-content-center align-self-center">
+                <span>{{ about.button_text }}</span>
+                <i class="bi bi-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- End About Section -->
+{% endif %}
+  <!-- ======= News Section ======= -->
+  <section id="news" class="news">
+    <div class="container" data-aos="fade-up">
+      <header class="section-header">
+        <p><a href="{% url 'news' %}">News</a></p>
+      </header>
+      <div class="testimonials-slider swiper" data-aos="fade-up" data-aos-delay="200">
+        <div class="swiper-wrapper">
+
+          {% for news_details in news_category.articles.all %}
+          <div class="swiper-slide">
+            <div class="news-item">
+              <div class="profile mt-auto">
+                <a href="{% url 'news_details' %}?id={{ news_details.id }}">
+                    {% if news_details.images.all.first %}
+                  <img src="{{ news_details.images.all.first.image.url }}" class="news-img" alt="{{ news_details.images.all.first.alternative_text }}">
+                    {% endif %}
+                  <h3>{{ news_details.title }}</h3>
+                </a>
+              </div>
+              <p>
+                {{ news_details.description }}
+              </p>
+            </div>
+          </div>
+          {% endfor %}
+          <!-- باقي الأخبار هتتعامل من خلال loop -->
+        </div>
+        <div class="swiper-pagination"></div>
+        <div class="read-more">
+          <a href="{% url 'news' %}?id={{ news_category.id }}&page=1"><span>Read all DIC news</span> <i class="bi bi-arrow-right"></i></a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- End News Section -->
+ {% if counter %}
+  <!-- ======= Counts Section ======= -->
+  <section id="counts" class="counts">
+    <div class="container" data-aos="fade-up">
+      <div class="row gy-4">
+          {% if counter.satisfied_clients %}
+            <div class="col-lg-3 col-md-6">
+              <div class="count-box">
+                <i class="bi bi-emoji-smile" style="color: #07a10d"></i>
+                <div>
+                  <span data-purecounter-start="0" data-purecounter-end="{{ counter.satisfied_clients }}" data-purecounter-duration="1" class="purecounter"></span>
+                  <p>Satisfied Clients</p>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+      {% if counter.successful_projects %}
+        <div class="col-lg-3 col-md-6">
+          <div class="count-box">
+            <i class="bi bi-card-checklist" style="color: #ca540a"></i>
+            <div>
+              <span data-purecounter-start="0" data-purecounter-end="{{ counter.successful_projects }}" data-purecounter-duration="1" class="purecounter"></span>
+              <p>Successful Projects</p>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      {% if counter.scientific_publications %}
+        <div class="col-lg-3 col-md-6">
+          <div class="count-box">
+            <i class="bi bi-journal-richtext" style="color: #ca540a"></i>
+            <div>
+              <span data-purecounter-start="0" data-purecounter-end="{{ counter.scientific_publications }}" data-purecounter-duration="1" class="purecounter"></span>
+              <p>Scientific Publications</p>
+            </div>
+          </div>
+        </div>
+          {% endif %}
+      {% if counter.collaborating_countries %}
+        <div class="col-lg-3 col-md-6">
+          <div class="count-box">
+            <i class="bi bi-globe-europe-africa" style="color: #07a10d"></i>
+            <div>
+              <span data-purecounter-start="0" data-purecounter-end="{{ counter.collaborating_countries }}" data-purecounter-duration="1" class="purecounter"></span>
+              <p>Collaborating Countries</p>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      </div>
+    </div>
+  </section>
+  <!-- End Counts Section -->
+{% endif %}
+{##}
+{#  <!-- ======= Research Section ======= -->#}
+{#  <section id="R_D_I" class="values">#}
+{#    <div class="container" data-aos="fade-up">#}
+{#      <header class="section-header"><p>Our Thematic Research</p></header>#}
+{#      <div class="row">#}
+{#        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200">#}
+{#          <div class="box">#}
+{#            <a href="{% url 'research_sus' %}">#}
+{#              <img src="{% static 'assets/img/research-3.png' %}" class="img-fluid" alt="">#}
+{#            </a>#}
+{#            <h3>Sustainability &amp; Circularity</h3>#}
+{#            <p>…</p>#}
+{#            <a href="{% url 'research_sus' %}" class="read-more"><span>Read More</span> <i class="bi bi-arrow-right"></i></a>#}
+{#          </div>#}
+{#        </div>#}
+{#        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="400">#}
+{#          <div class="box">#}
+{#            <a href="{% url 'research_digi' %}">#}
+{#              <img src="{% static 'assets/img/research-1.png' %}" class="img-fluid" alt="">#}
+{#            </a>#}
+{#            <h3>Digitalisation &amp; IT</h3>#}
+{#            <p>…</p>#}
+{#            <a href="{% url 'research_digi' %}" class="read-more"><span>Read More</span> <i class="bi bi-arrow-right"></i></a>#}
+{#          </div>#}
+{#        </div>#}
+{#        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="400">#}
+{#          <div class="box">#}
+{#            <a href="{% url 'research_mat' %}">#}
+{#              <img src="{% static 'assets/img/research-2.png' %}" class="img-fluid" alt="">#}
+{#            </a>#}
+{#            <h3>Advanced Materials</h3>#}
+{#            <p>…</p>#}
+{#            <a href="{% url 'research_mat' %}" class="read-more"><span>Read More</span> <i class="bi bi-arrow-right"></i></a>#}
+{#          </div>#}
+{#        </div>#}
+{#        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="600">#}
+{#          <div class="box">#}
+{#            <a href="{% url 'research_shm' %}">#}
+{#              <img src="{% static 'assets/img/research-4.png' %}" class="img-fluid" alt="">#}
+{#            </a>#}
+{#            <h3>Sensing &amp; Monitoring</h3>#}
+{#            <p>…</p>#}
+{#            <a href="{% url 'research_shm' %}" class="read-more"><span>Read More</span> <i class="bi bi-arrow-right"></i></a>#}
+{#          </div>#}
+{#        </div>#}
+{#      </div>#}
+{#    </div>#}
+{#  </section>#}
+{#  <!-- End Research Section -->#}
+{##}
+{#  <!-- ======= Portfolio Section ======= -->#}
+{#  <section id="portfolio" class="portfolio">#}
+{#    <div class="container" data-aos="fade-up">#}
+{#      <header class="section-header">#}
+{#        <p>Portfolio</p>#}
+{#        <h2>Our products/services, projects, and research results</h2>#}
+{#      </header>#}
+{#      <div class="row gy-4 portfolio-container" data-aos="fade-up" data-aos-delay="200">#}
+{#        <div class="col-lg-4 col-md-6 portfolio-item filter-dig">#}
+{#          <div class="portfolio-wrap">#}
+{#            <img src="{% static 'assets/img/portfolio/portfolio-1.jpg' %}" class="img-fluid" alt="">#}
+{#            <div class="portfolio-info">#}
+{#              <h4>Products</h4>#}
+{#              <p>Innovative products and digital solutions developed by DIC</p>#}
+{#              <div class="portfolio-links">#}
+{#                <a href="{% static 'assets/img/portfolio/portfolio-1.jpg' %}" data-gallery="portfolioGallery" class="portfolio-lightbox"><i class="bi bi-plus"></i></a>#}
+{#                <a href="{% url 'products' %}" title="More Details"><i class="bi bi-link"></i></a>#}
+{#              </div>#}
+{#            </div>#}
+{#          </div>#}
+{#        </div>#}
+{#        <div class="col-lg-4 col-md-6 portfolio-item filter-mat">#}
+{#          <div class="portfolio-wrap">#}
+{#            <img src="{% static 'assets/img/portfolio/portfolio-2.jpg' %}" class="img-fluid" alt="">#}
+{#            <div class="portfolio-info">#}
+{#              <h4>Projects</h4>#}
+{#              <p>Collaborative research projects by DIC and international partners</p>#}
+{#              <div class="portfolio-links">#}
+{#                <a href="{% static 'assets/img/portfolio/portfolio-2.jpg' %}" data-gallery="portfolioGallery" class="portfolio-lightbox"><i class="bi bi-plus"></i></a>#}
+{#                <a href="{% url 'projects' %}" title="More Details"><i class="bi bi-link"></i></a>#}
+{#              </div>#}
+{#            </div>#}
+{#          </div>#}
+{#        </div>#}
+{#        <div class="col-lg-4 col-md-6 portfolio-item filter-sus">#}
+{#          <div class="portfolio-wrap">#}
+{#            <img src="{% static 'assets/img/portfolio/portfolio-3.jpg' %}" class="img-fluid" alt="">#}
+{#            <div class="portfolio-info">#}
+{#              <h4>Publications</h4>#}
+{#              <p>Research results published in scientific journals by DIC team</p>#}
+{#              <div class="portfolio-links">#}
+{#                <a href="{% static 'assets/img/portfolio/portfolio-3.jpg' %}" data-gallery="portfolioGallery" class="portfolio-lightbox"><i class="bi bi-plus"></i></a>#}
+{#                <a href="{% url 'publications' %}" title="More Details"><i class="bi bi-link"></i></a>#}
+{#              </div>#}
+{#            </div>#}
+{#          </div>#}
+{#        </div>#}
+{#      </div>#}
+{#    </div>#}
+{#  </section>#}
+{#  <!-- End Portfolio Section -->#}
+{##}
+{#  <!-- ======= Services Section ======= -->#}
+{#  <section id="services" class="features">#}
+{#    <div class="container" data-aos="fade-up">#}
+{#      <header class="section-header"><p>Services</p></header>#}
+{#      <div class="row">#}
+{#        <div class="col-lg-6"><img src="{% static 'assets/img/features.png' %}" class="img-fluid" alt=""></div>#}
+{#        <div class="col-lg-6 mt-5 mt-lg-0 d-flex">#}
+{#          <div class="row align-self-center gy-4">#}
+{#            <div class="col-md-6"><div class="feature-box d-flex align-items-center"><i class="bi bi-check"></i><h3><a href="{% url 'products_shm' %}">Perform SHM and Risk Management</a></h3></div></div>#}
+{#            <div class="col-md-6"><div class="feature-box d-flex align-items-center"><i class="bi bi-check"></i><h3><a href="{% url 'research_sus' %}">Conduct LCA and sustainability analysis</a></h3></div></div>#}
+{#            <div class="col-md-6"><div class="feature-box d-flex align-items-center"><i class="bi bi-check"></i><h3><a href="{% url 'research_digi' %}">Develop digital solutions</a></h3></div></div>#}
+{#            <div class="col-md-6"><div class="feature-box d-flex align-items-center"><i class="bi bi-check"></i><h3><a href="{% url 'research_mat' %}">Test and characterise materials</a></h3></div></div>#}
+{#            <div class="col-md-6"><div class="feature-box d-flex align-items-center"><i class="bi bi-check"></i><h3><a href="{% url 'projects' %}#about">Oversee and manage R&D projects</a></h3></div></div>#}
+{#            <div class="col-md-6"><div class="feature-box d-flex align-items-center"><i class="bi bi-check"></i><h3>Provide training on scientific methodologies</h3></div></div>#}
+{#          </div>#}
+{#        </div>#}
+{#      </div>#}
+{#    </div>#}
+{#  </section>#}
+{#  <!-- End Services Section -->#}
+{##}
+{% if frequentlyaskedquestions %}
+  <!-- ======= FAQ Section ======= -->
+  <section id="faq" class="faq">
+    <div class="container" data-aos="fade-up">
+      <header class="section-header"><p>Frequently Asked Questions (F.A.Q.)</p></header>
+      <div class="row">
+          {% for faqlist in faqlists %}
+            <div class="col-lg-6">
+              <div class="accordion accordion-flush" id="{{ faqlist }}">
+                  {% for frequentlyaskedquestion in frequentlyaskedquestions %}
+                      {% if frequentlyaskedquestion.type == faqlist %}
+                        <div class="accordion-item">
+                          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq-content-{{ frequentlyaskedquestion.id }}">{{ frequentlyaskedquestion.question }}</button></h2>
+                          <div id="faq-content-{{ frequentlyaskedquestion.id }}" class="accordion-collapse collapse" data-bs-parent="#{{ faqlist }}"><div class="accordion-body">{{ frequentlyaskedquestion.answer }}</div></div>
+                        </div>
+                      {% endif %}
+                  {% endfor %}
+              </div>
+            </div>
+          {% endfor %}
+      </div>
+    </div>
+  </section>
+{% endif %}
+  <!-- End FAQ Section -->
+
+  <!-- ======= Clients Section ======= -->
+{% if collaborators %}
+  <section id="clients" class="clients">
+    <div class="container" data-aos="fade-up">
+      <header class="section-header"><p>Our Collaborators</p></header>
+      <div class="clients-slider swiper">
+        <div class="swiper-wrapper align-items-center">
+          {% for collaborator in collaborators %}
+            <div class="swiper-slide">
+              <img src="{{ collaborator.image.url }}" class="img-fluid" alt="">
+            </div>
+          {% endfor %}
+        </div>
+        <div class="swiper-pagination"></div>
+      </div>
+    </div>
+  </section>
+{% endif %}
+  <!-- End Clients Section -->
+
+  <!-- ======= Testimonials Section ======= -->
+{% if testimonials %}
+  <section id="testimonials" class="testimonials">
+    <div class="container" data-aos="fade-up">
+      <header class="section-header"><p>Testimonials</p></header>
+      <div class="testimonials-slider swiper" data-aos="fade-up" data-aos-delay="200">
+        <div class="swiper-wrapper">
+            {% for testimonial in testimonials %}
+                <div class="swiper-slide">
+            <div class="testimonial-item">
+                {% if testimonial.stars %}
+                  <div class="stars">
+                  {% for star in testimonial.stars|times %}
+                      <i class="bi bi-star-fill"></i>
+                  {% endfor %}
+                  </div>
+                {% endif %}
+                {% if testimonial.feedback %}
+                    <p>{{ testimonial.feedback}}</p>
+                {% endif %}
+                {% if testimonial.image %}
+                    <div class="profile mt-auto"><img src="{{ testimonial.image.url }}" class="testimonial-img" alt="">
+                {% endif %}
+                {% if testimonial.name %}
+                        <h3>{{ testimonial.name }}</h3>
+                {% endif %}
+                {% if testimonial.title %}
+                  <h4>{{ testimonial.title }}</h4></div>
+                {% endif %}
+            </div>
+          </div>
+            {% endfor %}
+          <!-- باقي الـ testimonials -->
+        </div>
+        <div class="swiper-pagination"></div>
+      </div>
+    </div>
+  </section>
+{% endif %}  
+    <!-- End Testimonials Section -->
+
+  
+    <!-- ======= Contact Section ======= -->
+  <section id="contact" class="contact">
+    {% if contact %}
+        <div class="container" data-aos="fade-up">
+          <header class="section-header"><p>Contact</p></header>
+          <div class="row gy-4">
+              {% if contact.email %}
+            <div class="col-md-4">
+              <div class="info-box">
+                <i class="bi bi-envelope"></i>
+                <h3>Email Us</h3>
+                <p><a href="mailto:{{ contact.email }}">{{ contact.email }}</a></p>
+              </div>
+            </div>
+                  {% endif %}
+          {% if contact.telephones.all %}
+            <div class="col-md-4">
+              <div class="info-box">
+                <i class="bi bi-telephone"></i>
+                <h3>Call Us</h3>
+                <p>
+                    {% for telephone in contact.telephones.all %}
+                    <a href="tel:{{ telephone.telephone }}">{{ telephone.telephone }}</a>
+                    <br>
+                    {% endfor %}
+                </p>
+              </div>
+            </div>
+              {% endif %}
+          {% if contact.linkedin %}
+              <div class="col-md-4">
+                      <div class="info-box">
+                        <div class="row">
+                          <i class="col-3 bi bi-chat-left-text"></i>
+                          <h3 class="col">Follow Us</h3>
+                        </div>
+                        <p>
+                          <a
+                            href="{{ contact.linkedin }}"
+                            class="linkedin"
+                            ><i class="bi bi-linkedin"></i
+                          ></a>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+          {% endif %}
+        {% if contact.addresses.all or contact.registration_numbers.all %}
+            <div class="row">
+              {% if contact.addresses.all %}
+                <div class="col-md-6">
+                  <div class="info-box">
+                    <div class="row">
+                        <i class="col-2 bi bi-geo-alt"></i>
+                        <h3 class="col">Address</h3>
+                    </div>
+                      {% for address in contact.addresses.all %}
+                        <h2>{{ address.country }}</h2>
+                        <p>
+                          <strong> Registered address: </strong> {{ address.registered_address }}
+                          <br />
+                          <strong> Contact address: </strong> {{ address.contact_address }}
+                          <br />
+                        </p>
+                      {% endfor %}
+                  </div>
+                </div>
+                  {% endif %}
+              {% if contact.registration_numbers.all %}
+                  <div class="col-md-6">
+                          <div class="info-box">
+                            <div class="row">
+                              <i class="col-2 bi bi-credit-card-2-front"></i>
+                              <h3 class="col">Registration Numbers</h3>
+                            </div>
+                              {% for registration_number in contact.registration_numbers.all %}
+                                <h2>{{ registration_number.country }}</h2>
+                                <p>
+                                {% if registration_number.registration_title1 and registration_number.registration_number1 %}
+                                    <strong>{{ registration_number.registration_title1 }}: </strong> {{ registration_number.registration_number1 }} <br />
+                                {% endif %}
+                                {% if registration_number.registration_title2 and registration_number.registration_number2 %}
+                                    <strong>{{ registration_number.registration_title2 }}: </strong> {{ registration_number.registration_number2 }} <br />
+                                {% endif %}
+                                {% if registration_number.registration_title3 and registration_number.registration_number3 %}
+                                    <strong>{{ registration_number.registration_title3 }}: </strong> {{ registration_number.registration_number3 }} <br />
+                                {% endif %}
+                                </p>
+                              {% endfor %}
+                          </div>
+                        </div>
+                  </div>
+              {% endif %}
+            </div>
+        {% endif %}
+        
+    {% endif %}
+      <div class="row" data-aos="fade-up" data-aos-delay="200">
+        {% if contact.location %}
+            <div class="col-lg-6">
+              <iframe class="mb-4 mb-lg-0" src="{{ contact.location }}" style="border:0;width:100%;height:384px" allowfullscreen></iframe>
+            </div>
+        {% endif %}
+            <div class="col-lg-6" id="contact_form">
+                {% if send_message_message and send_message_color %}
+                  <p style="color: {{ send_message_color }}; font-family: Arial, sans-serif; font-size: 18px;" ><strong>{{ send_message_message }}</strong></p>
+                    {% endif %}
+              <form method="post" action="{% url 'contact_form' %}" >
+                  {% csrf_token %}
+                  {{ contact_form.as_p }}
+                  <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Send Message</button>
+                  </div>
+              </form>
+            </div>
+          </div>
+
+  </section>
+  <!-- End Contact Section -->
+  
+</main>

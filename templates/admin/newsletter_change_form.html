@@ -1,0 +1,125 @@
+{% extends "admin/change_form.html" %}
+{% load static %}
+
+{#{% block after_related_objects %}#}
+{##}
+{#    #}
+{#{% endblock %}#}
+{{% block admin_change_form_document_ready %}
+    {{ block.super }}
+  <div class="card mt-4">
+   <div class="card-header">
+        <h4>👁 Newsletter Preview</h4>
+    </div>
+    <div class="card-body" style="width: 100%; max-width: 1000px; margin: 0 auto;">
+        {{ news_letter_preview|safe }}
+    </div>
+    <div class="card-header">
+      <h4>📊 Newsletter Statistics</h4>
+    </div>
+    <div class="card-body" style="width: 100%; max-width: 1000px; margin: 0 auto;">
+      <canvas id="newsletterChart" style="height: 400px; width: 200%;"></canvas>
+    </div>
+    
+  </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const ctx = document.getElementById('newsletterChart').getContext('2d');
+    const labels = {{ chart_labels|safe }};
+    const values = {{ chart_values|safe }};
+
+    // 🟦 إنشاء تدرج لوني ديناميكي يتغير حسب الوضع
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (isDarkMode) {
+      gradient.addColorStop(0, 'rgba(54, 162, 235, 0.8)');
+      gradient.addColorStop(1, 'rgba(54, 162, 235, 0.2)');
+    } else {
+      gradient.addColorStop(0, 'rgba(54, 162, 235, 0.6)');
+      gradient.addColorStop(1, 'rgba(54, 162, 235, 0.05)');
+    }
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            type: 'bar',
+            label: 'Clickers',
+            data: values,
+            backgroundColor: gradient,
+            borderRadius: 8,
+            barThickness: 'flex',
+            maxBarThickness: 40,
+          },
+          {
+            type: 'line',
+            label: 'Trend',
+            data: values,
+            borderColor: isDarkMode ? '#00e4ff' : '#007bff',
+            borderWidth: 2,
+            fill: false,
+            tension: 0.35, // منحنى سلس
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            pointBackgroundColor: isDarkMode ? '#00e4ff' : '#007bff',
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+          mode: 'index',
+          intersect: false,
+        },
+        animation: {
+          duration: 1200,
+          easing: 'easeOutQuart'
+        },
+        plugins: {
+          legend: {
+            labels: {
+              color: isDarkMode ? '#ddd' : '#333',
+              font: { size: 13 }
+            }
+          },
+          tooltip: {
+            backgroundColor: isDarkMode ? '#222' : '#fff',
+            titleColor: isDarkMode ? '#fff' : '#000',
+            bodyColor: isDarkMode ? '#fff' : '#000',
+            borderColor: isDarkMode ? '#444' : '#ddd',
+            borderWidth: 1,
+            padding: 10,
+            displayColors: true,
+          }
+        },
+        scales: {
+          x: {
+            ticks: {
+              color: isDarkMode ? '#ccc' : '#333',
+              font: { size: 12 }
+            },
+            grid: {
+              display: false
+            }
+          },
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1,
+              color: isDarkMode ? '#ccc' : '#333'
+            },
+            grid: {
+              color: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'
+            }
+          }
+        }
+      }
+    });
+  });
+</script>
+
+{% endblock %}}

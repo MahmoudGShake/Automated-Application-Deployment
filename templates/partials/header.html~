@@ -1,0 +1,27 @@
+{% load static %}
+<header id="header" class="header fixed-top">
+  <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+
+    <!-- Logo -->
+    <a href="{% url 'index' %}#hero" class="logo d-flex align-items-center">
+      <img src="{% static 'assets/img/logo.svg' %}" alt="">
+      <span style="color: #233954ff">Dig</span><span style="color: #4f833aff">InnoCent</span>
+    </a>
+
+    <!-- Navbar -->
+    <nav id="navbar" class="navbar">
+      <ul>
+        {% for category in navbar_categories %}
+          {% include "partials/_category_dropdown.html" with category=category %}
+        {% endfor %}
+    
+        <li>
+          <a class="getstarted scrollto" href="{{ pulse_hub_obj.link }}"></a>
+        </li>
+      </ul>
+      
+      <!-- Mobile Navigation Toggle -->
+      <i class="mobile-nav-toggle bi bi-list d-lg-none"></i>
+    </nav>
+  </div>
+</header>

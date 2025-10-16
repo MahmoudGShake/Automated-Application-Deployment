@@ -1,0 +1,114 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+
+  <title>403 | Forbidden</title>
+
+  <!-- Vendor CSS -->
+  <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" />
+  <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet" />
+  <link href="{% static 'assets/vendor/aos/aos.css' %}" rel="stylesheet" />
+  <link href="{% static 'assets/css/style.css' %}" rel="stylesheet" />
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #ff6a00 0%, #ee0979 100%);
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+    }
+    .error-page {
+      min-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .error-page h1 {
+      font-size: 7rem;
+      font-weight: 900;
+      margin-bottom: 10px;
+      animation: bounce 2s infinite;
+      text-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    .error-page h2 {
+      font-size: 2rem;
+      margin-bottom: 15px;
+    }
+    .error-page p {
+      max-width: 500px;
+      font-size: 1.1rem;
+      opacity: 0.9;
+      margin-bottom: 25px;
+    }
+    .error-btns a {
+      padding: 12px 25px;
+      margin: 5px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      color: #fff;
+      background: rgba(0,0,0,0.3);
+      transition: 0.3s;
+    }
+    .error-btns a:hover {
+      background: rgba(0,0,0,0.6);
+      transform: translateY(-3px);
+    }
+    /* floating shapes */
+    .circle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      animation: floatShape 12s linear infinite;
+    }
+    .circle.small { width: 60px; height: 60px; left: 10%; bottom: -80px; }
+    .circle.medium { width: 120px; height: 120px; right: 15%; bottom: -120px; }
+    .circle.large { width: 200px; height: 200px; left: 50%; bottom: -200px; }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    @keyframes floatShape {
+      0% { transform: translateY(0) rotate(0deg); opacity: 0.3; }
+      50% { transform: translateY(-200px) rotate(180deg); opacity: 0.8; }
+      100% { transform: translateY(0) rotate(360deg); opacity: 0.3; }
+    }
+  </style>
+</head>
+<body>
+  {% include 'partials/header.html' %}
+
+  <main id="main">
+    <section class="error-page" data-aos="fade-up">
+      <!-- floating shapes -->
+      <div class="circle small"></div>
+      <div class="circle medium"></div>
+      <div class="circle large"></div>
+
+      <h1>403</h1>
+      <h2>Access Forbidden</h2>
+      <p>You don’t have permission to access this page.<br/>Please contact the administrator if you believe this is a mistake.</p>
+      <div class="error-btns">
+        <a href="{% url 'index' %}"><i class="bi bi-house-door-fill"></i> Home</a>
+        <a href="javascript:history.back()"><i class="bi bi-arrow-left-circle"></i> Go Back</a>
+      </div>
+    </section>
+  </main>
+
+{#  {% include 'partials/footer.html' %}#}
+
+  <!-- Vendor JS -->
+  <script src="{% static 'assets/vendor/aos/aos.js' %}"></script>
+  <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script>
+    AOS.init();
+  </script>
+</body>
+</html>

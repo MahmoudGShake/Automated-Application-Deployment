@@ -1,0 +1,48 @@
+{% load static %}
+{% if hero %}
+<section id="hero" class="hero d-flex align-items-center">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6 d-flex flex-column justify-content-center">
+        <h1 data-aos="fade-up">
+          {{ hero.h1_text }}
+        </h1>
+        <h2 data-aos="fade-up" data-aos-delay="400">
+          {{ hero.h2_text }}
+        </h2>
+        <p data-aos="fade-up" data-aos-delay="600">
+          {{ hero.processed_p_text|safe }}
+        </p>
+        <div
+          class="text-center text-lg-start"
+          data-aos="zoom-in-right"
+          data-aos-delay="800"
+        >
+          <a
+            href="{{ hero.button_link }}"
+            class="btn-get-started scrollto d-inline-flex align-items-center justify-content-center align-self-center"
+          >
+            <span>{{ hero.button_text }}</span>
+            <i class="bi bi-arrow-right"></i>
+          </a>
+            <p><p/>
+        </div>
+      </div>
+
+      <div
+        class="col-lg-6 hero-img"
+        data-aos="zoom-out"
+        data-aos-delay="200"
+      >
+          {% if hero.image %}
+        <img
+          src="{{ hero.image.url }}"
+          class="img-fluid"
+          alt={{ hero.image_alternative_text }}
+        />
+          {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{

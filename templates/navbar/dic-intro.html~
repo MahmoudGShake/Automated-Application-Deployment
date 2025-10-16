@@ -1,0 +1,2520 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;"
+    />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DigInnoCent Company Presentation</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+  <style>
+      html, body { 
+      font-family: "Montserrat", sans-serif; 
+      margin: 0; 
+      padding: 0; 
+      height: 100vh;
+      overflow: hidden;
+      scroll-behavior: smooth;
+      }
+    .slide-container { 
+      width: 100%;
+      height: 100vh; 
+      margin: 0 auto; 
+        background: linear-gradient(135deg, #ffffff 0%, #f5f9ff 100%);
+      position: relative;
+      overflow: hidden;
+    }
+      .slides {
+        position: relative;
+        height: 100vh;
+        transition: transform 0.5s ease-in-out;
+      }
+    .slide { 
+        position: absolute;
+        width: 100%;
+        height: 100vh;
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+        pointer-events: none;
+        overflow: hidden;
+    }
+    .slide.active { 
+      opacity: 1;
+        pointer-events: all;
+    }
+    .slide-content {
+        /* height: 100vh; */
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        z-index: 10;
+        position: relative;
+        padding-top: 100px; /* Space for top navigation */
+        padding-bottom: 40px;
+        box-sizing: border-box;
+        /* overflow-y: auto; */
+        /* overflow-x: hidden; */
+      }
+      /* Include all existing styles from the individual slides */
+      .bg-pattern {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 60%;
+        height: 100%;
+        background: linear-gradient(
+          135deg,
+          rgba(41, 170, 227, 0.1) 0%,
+          rgba(76, 175, 80, 0.1) 100%
+        );
+        clip-path: polygon(30% 0, 100% 0, 100% 100%, 0% 100%);
+      }
+      .circle-1 {
+        position: absolute;
+        bottom: -100px;
+        right: -100px;
+        width: 400px;
+        height: 400px;
+        border-radius: 50%;
+        background: linear-gradient(
+          135deg,
+          rgba(41, 170, 227, 0.1) 0%,
+          rgba(76, 175, 80, 0.1) 100%
+        );
+        z-index: 1;
+      }
+      .circle-2 {
+        position: absolute;
+        top: -150px;
+        left: -150px;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: linear-gradient(
+          135deg,
+          rgba(76, 175, 80, 0.1) 0%,
+          rgba(41, 170, 227, 0.1) 100%
+        );
+        z-index: 1;
+      }
+      .key-aspect,
+      .service-card,
+      .project-card,
+      .empower-card,
+      .testimonial-card,
+      .summary-card,
+      .feature-card {
+        transition: all 0.3s ease;
+      }
+      .key-aspect:hover,
+      .service-card:hover,
+      .project-card:hover,
+      .empower-card:hover,
+      .testimonial-card:hover,
+      .summary-card:hover,
+      .feature-card:hover {
+        transform: translateY(-5px);
+      }
+      .feature-card {
+        border-left: 4px solid transparent;
+      }
+      .feature-card:hover {
+        border-left: 4px solid #3b82f6;
+      }
+      .service-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 0;
+        background: linear-gradient(180deg, #3b82f6, #10b981);
+        transition: height 0.3s ease;
+      }
+      .service-card:hover::before {
+        height: 100%;
+      }
+      .nav-button {
+        padding: 12px 24px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        border: none;
+        position: relative;
+        overflow: hidden;
+        min-width: 100px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+      .nav-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.5s;
+      }
+      .nav-button:hover::before {
+        left: 100%;
+      }
+      .nav-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      }
+      .nav-button:active {
+        transform: translateY(-1px);
+      }
+      .slide-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: #e2e8f0;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 2px solid transparent;
+        position: relative;
+      }
+      .slide-dot:hover {
+        background-color: #94a3b8;
+        transform: scale(1.1);
+      }
+      .slide-dot.active {
+        background-color: #3b82f6;
+        transform: scale(1.3);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        border-color: #3b82f6;
+      }
+      
+      /* Loading and transition effects */
+      .slide {
+        transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      /* Focus states for accessibility */
+      .nav-button:focus,
+      .slide-dot:focus {
+        outline: 2px solid #3b82f6;
+        outline-offset: 2px;
+      }
+      
+      /* Disabled state for navigation buttons */
+      .nav-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+      
+      /* Progress indicator */
+      .slide-progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #3b82f6, #10b981);
+        z-index: 200;
+        transition: width 0.3s ease;
+      }
+      
+      /* Top Navigation Component */
+      .top-navigation {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 20px;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 15px 25px;
+        border-radius: 50px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+        pointer-events: auto;
+      }
+      
+      .top-navigation .nav-dots {
+        display: flex;
+        gap: 8px;
+        margin: 0;
+      }
+      
+      .top-navigation .nav-buttons {
+        display: flex;
+        gap: 1rem;
+        position: static;
+        background: transparent;
+        padding: 0;
+        box-shadow: none;
+        backdrop-filter: none;
+        border: none;
+        margin: 0;
+      }
+      
+      /* Prevent any content from exceeding viewport */
+      * {
+        box-sizing: border-box;
+      }
+      
+      /* Fix scroll by ensuring content fits viewport */
+      .slide-content {
+        box-sizing: border-box;
+        max-height: 100vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+      
+      /* Ensure body doesn't scroll */
+      body {
+        overflow: hidden;
+      }
+      
+      /* Ensure slide container doesn't scroll */
+      .slide-container {
+        overflow: hidden;
+      }
+      
+      /* Prevent any element from exceeding viewport */
+      .slide-content > * {
+        max-height: none;
+      }
+      .section-title {
+        position: relative;
+        display: inline-block;
+      }
+      .section-title::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(90deg, #3b82f6, #10b981);
+      }
+      .logo {
+        max-width: 350px;
+      }
+      .page-indicator {
+        position: absolute;
+        bottom: 120px;
+        right: 20px;
+        font-size: 14px;
+        color: #6b7280;
+      }
+      .service-icon,
+      .contact-item,
+      .innovation-pill {
+        transition: all 0.3s ease;
+      }
+      .service-card:hover .service-icon {
+        transform: scale(1.1);
+      }
+      .contact-item:hover {
+        transform: translateX(5px);
+        background-color: rgba(255, 255, 255, 0.9);
+      }
+      .innovation-pill:hover {
+        transform: translateX(5px);
+      }
+      .hexagon {
+        clip-path: polygon(
+          25% 0%,
+          75% 0%,
+          100% 50%,
+          75% 100%,
+          25% 100%,
+          0% 50%
+        );
+      }
+      .quote-icon {
+        font-size: 24px;
+        color: rgba(59, 130, 246, 0.3);
+      }
+      .blue-gradient {
+        background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+      }
+      .green-gradient {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      }
+      .purple-gradient {
+        background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+      }
+      .yellow-gradient {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      }
+
+      /* Responsive Design */
+      @media (max-width: 1400px) {
+        .slide-content {
+          padding: 1.5rem;
+          padding-top: 100px;
+          padding-bottom: 40px;
+        }
+        .top-navigation {
+          top: 15px;
+          padding: 12px 20px;
+          gap: 15px;
+        }
+        .top-navigation .nav-button {
+          padding: 8px 16px;
+          font-size: 12px;
+          min-width: 80px;
+        }
+        .logo {
+          max-width: 300px;
+        }
+      }
+
+      @media (max-width: 1200px) {
+        .slide-container {
+          max-width: 100%;
+        }
+        .slide-content {
+          padding: 1.5rem;
+          padding-top: 90px;
+          padding-bottom: 40px;
+        }
+        .grid-cols-4 {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1rem;
+        }
+        .grid-cols-3 {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1rem;
+        }
+        .grid-cols-2 {
+          grid-template-columns: 1fr;
+          gap: 1rem;
+        }
+        .top-navigation {
+          top: 15px;
+          padding: 12px 20px;
+          gap: 15px;
+        }
+        .top-navigation .nav-button {
+          padding: 8px 16px;
+          font-size: 12px;
+          min-width: 80px;
+        }
+        .logo {
+          max-width: 280px;
+        }
+        .text-5xl {
+          font-size: 2.75rem;
+        }
+        .text-4xl {
+          font-size: 2.25rem;
+        }
+        .text-3xl {
+          font-size: 1.75rem;
+        }
+        .text-2xl {
+          font-size: 1.5rem;
+        }
+        .text-xl {
+          font-size: 1.125rem;
+        }
+      }
+
+      @media (max-width: 992px) {
+        .slide-content {
+          padding: 1.25rem;
+          padding-top: 85px;
+          padding-bottom: 40px;
+        }
+        
+        .top-navigation {
+          top: 12px;
+          padding: 10px 18px;
+          gap: 12px;
+        }
+        .top-navigation .nav-button {
+          padding: 7px 14px;
+          font-size: 11px;
+          min-width: 75px;
+        }
+        .top-navigation .nav-dots {
+          gap: 7px;
+        }
+        .top-navigation .slide-dot {
+          width: 11px;
+          height: 11px;
+        }
+
+        .grid-cols-4 {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 0.75rem;
+        }
+        .grid-cols-3 {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 0.75rem;
+        }
+        .grid-cols-2 {
+          grid-template-columns: 1fr;
+          gap: 0.75rem;
+        }
+
+        .logo {
+          max-width: 260px;
+        }
+        .text-5xl {
+          font-size: 2.5rem;
+        }
+        .text-4xl {
+          font-size: 2rem;
+        }
+        .text-3xl {
+          font-size: 1.5rem;
+        }
+        .text-2xl {
+          font-size: 1.25rem;
+        }
+        .text-xl {
+          font-size: 1rem;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .slide-content {
+          padding: 1rem;
+          padding-top: 80px;
+          padding-bottom: 40px;
+        }
+        
+        /* Top Navigation adjustments */
+        .top-navigation {
+          top: 10px;
+          padding: 8px 12px;
+          gap: 8px;
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+        .top-navigation .nav-button {
+          padding: 6px 10px;
+          font-size: 10px;
+          min-width: 65px;
+        }
+        .top-navigation .nav-dots {
+          gap: 6px;
+          order: -1;
+          width: 100%;
+          justify-content: center;
+          margin-bottom: 8px;
+        }
+        .top-navigation .slide-dot {
+          width: 10px;
+          height: 10px;
+        }
+
+        /* Typography adjustments */
+        .text-5xl {
+          font-size: 2.5rem;
+        }
+        .text-4xl {
+          font-size: 2rem;
+        }
+        .text-3xl {
+          font-size: 1.5rem;
+        }
+        .text-2xl {
+          font-size: 1.25rem;
+        }
+        .text-xl {
+          font-size: 1rem;
+        }
+
+        /* Grid adjustments */
+        .grid-cols-4 {
+          grid-template-columns: 1fr;
+          gap: 0.75rem;
+        }
+        .grid-cols-3 {
+          grid-template-columns: 1fr;
+          gap: 0.75rem;
+        }
+        .grid-cols-2 {
+          grid-template-columns: 1fr;
+          gap: 0.75rem;
+        }
+
+        /* Layout adjustments */
+        .flex-row {
+          flex-direction: column;
+        }
+        .space-x-12 {
+          gap: 0.75rem;
+        }
+        .space-x-8 {
+          gap: 0.75rem;
+        }
+        .w-1\/2 {
+          width: 100%;
+        }
+
+        /* Card adjustments */
+        .key-aspect,
+        .service-card,
+        .project-card,
+        .empower-card,
+        .testimonial-card,
+        .summary-card,
+        .feature-card {
+          margin-bottom: 0.75rem;
+          padding: 0.75rem;
+        }
+
+        /* Text adjustments */
+        .max-w-3xl {
+          max-width: 100%;
+        }
+        .max-w-4xl {
+          max-width: 100%;
+        }
+
+        /* Logo adjustments */
+        .logo {
+          max-width: 200px;
+        }
+
+        /* Page indicator */
+        .page-indicator {
+          bottom: 100px;
+          right: 10px;
+          font-size: 10px;
+        }
+
+        /* Service card content adjustments */
+        .service-card .flex {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .service-card .service-icon {
+          margin-bottom: 0.75rem;
+          margin-right: 0;
+        }
+
+        /* Project card adjustments */
+        .project-card {
+          padding: 0.75rem;
+        }
+        .project-card .bg-purple-600,
+        .project-card .bg-green-600,
+        .project-card .bg-blue-600 {
+          padding: 0.5rem;
+          margin: -0.75rem -0.75rem 0.5rem -0.75rem;
+        }
+
+        /* Feature card adjustments */
+        .feature-card .flex {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .feature-card .w-12 {
+          margin-bottom: 0.5rem;
+          margin-right: 0;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .slide-content {
+          padding: 0.75rem;
+          padding-top: 70px;
+          padding-bottom: 80px;
+          max-height: 100vh;
+          overflow-y: auto;
+          overflow-x: hidden;
+        }
+
+        .top-navigation {
+          top: 8px;
+          left:430px;
+          padding: 8px 20px;
+          gap: 8px;
+          flex-direction: column;
+          align-items: center;
+        }
+        .top-navigation .nav-buttons {
+          display: flex;
+          gap: 0.5rem;
+          order: 2;
+        }
+        .top-navigation .nav-dots {
+          order: 1;
+          margin-bottom: 6px;
+        }
+        .top-navigation .nav-button {
+          padding: 5px 8px;
+          font-size: 9px;
+          min-width: 60px;
+        }
+        .top-navigation .slide-dot {
+          width: 8px;
+          height: 8px;
+        }
+
+        /* Typography for small mobile */
+        .text-5xl {
+          font-size: 2.25rem;
+        }
+        .text-4xl {
+          font-size: 1.875rem;
+        }
+        .text-3xl {
+          font-size: 1.5rem;
+        }
+        .text-2xl {
+          font-size: 1.25rem;
+        }
+        .text-xl {
+          font-size: 1rem;
+        }
+
+        .logo {
+          max-width: 180px;
+        }
+
+        /* Grid for small mobile */
+        .grid-cols-4,
+        .grid-cols-3,
+        .grid-cols-2 {
+          grid-template-columns: 1fr;
+          gap: 0.5rem;
+        }
+
+        /* Card padding adjustments */
+        .p-6 {
+          padding: 0.75rem;
+        }
+        .p-5 {
+          padding: 0.5rem;
+        }
+        .p-4 {
+          padding: 0.375rem;
+        }
+
+        /* Text size adjustments */
+        .text-sm {
+          font-size: 0.7rem;
+        }
+        .text-xs {
+          font-size: 0.6rem;
+        }
+
+        /* Page indicator for small mobile */
+        .page-indicator {
+          bottom: 70px;
+          right: 5px;
+          font-size: 9px;
+        }
+
+        /* Service card adjustments for small screens */
+        .service-card .flex {
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+        }
+        .service-card .service-icon {
+          margin-bottom: 0.5rem;
+          margin-right: 0;
+        }
+
+        /* Project card adjustments */
+        .project-card {
+          padding: 0.5rem;
+        }
+        .project-card .bg-purple-600,
+        .project-card .bg-green-600,
+        .project-card .bg-blue-600 {
+          padding: 0.375rem;
+          margin: -0.5rem -0.5rem 0.375rem -0.5rem;
+          font-size: 0.8rem;
+        }
+
+        /* Feature card adjustments */
+        .feature-card .flex {
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+        }
+        .feature-card .w-12 {
+          margin-bottom: 0.375rem;
+          margin-right: 0;
+        }
+
+        /* Hide some elements on very small screens */
+        .hidden-mobile {
+          display: none;
+        }
+        
+        /* Last slide fixes for small mobile */
+        .slide-content .grid.grid-cols-4 {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 0.5rem;
+        }
+        .slide-content .contact-item {
+          padding: 0.75rem;
+          margin-bottom: 1rem;
+        }
+        .slide-content .contact-item .w-10 {
+          width: 2.25rem;
+          height: 2.25rem;
+        }
+        .slide-content .contact-item p {
+          font-size: 0.8rem;
+          line-height: 1.4;
+        }
+        .slide-content .bg-gradient-to-r {
+          padding: 1rem;
+        }
+        .slide-content .bg-gradient-to-r h4 {
+          font-size: 1.125rem;
+        }
+        .slide-content .bg-gradient-to-r p {
+          font-size: 0.875rem;
+        }
+        .slide-content .flex.flex-col.space-y-4 {
+          gap: 1rem;
+        }
+        .slide-content .flex.flex-col.space-y-4 .w-10 {
+          width: 2.25rem;
+          height: 2.25rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .slide-content {
+          padding: 0.5rem;
+          padding-top: 60px;
+          padding-bottom: 60px;
+          max-height: 100vh;
+          overflow-y: auto;
+          overflow-x: hidden;
+        }
+
+        .top-navigation {
+          top: 5px;
+          padding: 4px 8px;
+          gap: 4px;
+        }
+        .top-navigation .nav-button {
+          padding: 4px 6px;
+          font-size: 8px;
+          min-width: 50px;
+        }
+        .top-navigation .slide-dot {
+          width: 7px;
+          height: 7px;
+        }
+
+        /* Typography for very small mobile */
+        .text-5xl {
+          font-size: 1.875rem;
+        }
+        .text-4xl {
+          font-size: 1.5rem;
+        }
+        .text-3xl {
+          font-size: 1.25rem;
+        }
+        .text-2xl {
+          font-size: 1.125rem;
+        }
+        .text-xl {
+          font-size: 0.875rem;
+        }
+
+        .logo {
+          max-width: 150px;
+        }
+
+        /* Grid for very small mobile */
+        .grid-cols-4,
+        .grid-cols-3,
+        .grid-cols-2 {
+          grid-template-columns: 1fr;
+          gap: 0.375rem;
+        }
+
+        /* Card padding adjustments */
+        .p-6 {
+          padding: 0.5rem;
+        }
+        .p-5 {
+          padding: 0.375rem;
+        }
+        .p-4 {
+          padding: 0.25rem;
+        }
+
+        /* Text size adjustments */
+        .text-sm {
+          font-size: 0.65rem;
+        }
+        .text-xs {
+          font-size: 0.55rem;
+        }
+
+        /* Page indicator for very small mobile */
+        .page-indicator {
+          bottom: 60px;
+          right: 3px;
+          font-size: 8px;
+        }
+
+        /* Hide some elements on very small screens */
+        .hidden-mobile {
+          display: none;
+        }
+        
+        /* Last slide mobile fixes for very small screens */
+        .slide-content .grid.grid-cols-4 {
+          grid-template-columns: 1fr;
+          gap: 0.5rem;
+        }
+        .slide-content .contact-item {
+          padding: 0.5rem;
+          margin-bottom: 0.75rem;
+        }
+        .slide-content .contact-item .w-10 {
+          width: 2rem;
+          height: 2rem;
+        }
+        .slide-content .contact-item p {
+          font-size: 0.75rem;
+          line-height: 1.3;
+        }
+        .slide-content .bg-gradient-to-r {
+          padding: 0.75rem;
+        }
+        .slide-content .bg-gradient-to-r h4 {
+          font-size: 1rem;
+        }
+        .slide-content .bg-gradient-to-r p {
+          font-size: 0.8rem;
+        }
+        .slide-content .flex.flex-col.space-y-4 {
+          gap: 0.75rem;
+        }
+        .slide-content .flex.flex-col.space-y-4 .w-10 {
+          width: 2rem;
+          height: 2rem;
+        }
+      }
+
+      /* Fix overflow issues on small screens */
+      @media (max-width: 768px) {
+        .slide-content {
+          -webkit-overflow-scrolling: touch;
+          scroll-behavior: smooth;
+        }
+        
+        /* Ensure cards don't overflow */
+        .key-aspect,
+        .service-card,
+        .project-card,
+        .empower-card,
+        .testimonial-card,
+        .summary-card,
+        .feature-card {
+          max-width: 100%;
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+        }
+        
+        /* Fix text overflow in cards */
+        .service-card p,
+        .project-card p,
+        .empower-card p,
+        .testimonial-card p,
+        .summary-card p,
+        .feature-card p {
+          word-break: break-word;
+          hyphens: auto;
+        }
+        
+        /* Last slide specific fixes */
+        .slide-content .flex.space-x-8 {
+          flex-direction: column;
+          gap: 1.5rem;
+        }
+        .slide-content .w-1\/2 {
+          width: 100%;
+        }
+        .slide-content .grid.grid-cols-4 {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 0.75rem;
+        }
+        .slide-content .contact-item {
+          padding: 0.75rem;
+        }
+        .slide-content .contact-item .w-10 {
+          width: 2.5rem;
+          height: 2.5rem;
+        }
+        .slide-content .contact-item p {
+          font-size: 0.8rem;
+          line-height: 1.4;
+        }
+        .slide-content .bg-gradient-to-r {
+          padding: 1rem;
+        }
+        .slide-content .bg-gradient-to-r h4 {
+          font-size: 1.125rem;
+        }
+        .slide-content .bg-gradient-to-r p {
+          font-size: 0.875rem;
+        }
+      }
+
+      /* Landscape orientation adjustments */
+      @media (max-height: 600px) and (orientation: landscape) {
+        .slide-content {
+          padding: 0.75rem;
+          padding-top: 60px;
+          padding-bottom: 80px;
+        }
+        .top-navigation {
+          top: 8px;
+          padding: 6px 12px;
+        }
+        .top-navigation .nav-button {
+          padding: 4px 8px;
+          font-size: 10px;
+          min-width: 60px;
+        }
+        .top-navigation .slide-dot {
+          width: 8px;
+          height: 8px;
+        }
+        .page-indicator {
+          bottom: 60px;
+          right: 8px;
+          font-size: 10px;
+        }
+        .logo {
+          max-width: 200px;
+        }
+        .text-5xl {
+          font-size: 1.75rem;
+        }
+        .text-4xl {
+          font-size: 1.5rem;
+        }
+        .text-3xl {
+          font-size: 1.125rem;
+        }
+        .text-2xl {
+          font-size: 1rem;
+        }
+        .text-xl {
+          font-size: 0.875rem;
+        }
+        .grid-cols-4,
+        .grid-cols-3 {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 0.5rem;
+        }
+        .grid-cols-2 {
+          grid-template-columns: 1fr;
+          gap: 0.5rem;
+        }
+      }
+
+      /* Extra large screens */
+      @media (min-width: 1600px) {
+        .slide-content {
+          padding: 2.5rem;
+          padding-top: 120px;
+          padding-bottom: 50px;
+        }
+        .top-navigation {
+          top: 25px;
+          padding: 18px 30px;
+          gap: 25px;
+        }
+        .top-navigation .nav-button {
+          padding: 14px 28px;
+          font-size: 16px;
+          min-width: 120px;
+        }
+        .top-navigation .slide-dot {
+          width: 14px;
+          height: 14px;
+        }
+        .logo {
+          max-width: 400px;
+        }
+        .text-5xl {
+          font-size: 3.5rem;
+        }
+        .text-4xl {
+          font-size: 2.75rem;
+        }
+        .text-3xl {
+          font-size: 2.25rem;
+        }
+        .text-2xl {
+          font-size: 1.875rem;
+        }
+        .text-xl {
+          font-size: 1.5rem;
+        }
+      }
+
+      /* Ultra-wide screens */
+      @media (min-width: 2000px) {
+        .slide-content {
+          padding: 3rem;
+          padding-top: 140px;
+          padding-bottom: 60px;
+        }
+        .top-navigation {
+          top: 30px;
+          padding: 20px 35px;
+          gap: 30px;
+        }
+        .top-navigation .nav-button {
+          padding: 16px 32px;
+          font-size: 18px;
+          min-width: 140px;
+        }
+        .top-navigation .slide-dot {
+          width: 16px;
+          height: 16px;
+        }
+        .logo {
+          max-width: 450px;
+        }
+        .text-5xl {
+          font-size: 4rem;
+        }
+        .text-4xl {
+          font-size: 3rem;
+        }
+        .text-3xl {
+          font-size: 2.5rem;
+        }
+        .text-2xl {
+          font-size: 2rem;
+        }
+        .text-xl {
+          font-size: 1.75rem;
+        }
+      }
+
+      /* High DPI displays */
+      @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+        .slide-dot {
+          border-width: 1px;
+        }
+        .nav-button {
+          border-width: 1px;
+        }
+      }
+
+      /* Touch device improvements */
+      @media (hover: none) and (pointer: coarse) {
+        .nav-button {
+          min-height: 44px;
+          min-width: 44px;
+          padding: 12px 16px;
+        }
+        .slide-dot {
+          min-width: 44px;
+          min-height: 44px;
+          border-radius: 50%;
+        }
+        .key-aspect,
+        .service-card,
+        .project-card,
+        .empower-card,
+        .testimonial-card,
+        .summary-card,
+        .feature-card {
+          min-height: 44px;
+        }
+      }
+
+      /* Reduced motion preferences */
+      @media (prefers-reduced-motion: reduce) {
+        .slide {
+          transition: none;
+        }
+        .nav-button,
+        .slide-dot,
+        .key-aspect,
+        .service-card,
+        .project-card,
+        .empower-card,
+        .testimonial-card,
+        .summary-card,
+        .feature-card {
+          transition: none;
+        }
+        .nav-button::before {
+          display: none;
+        }
+      }
+
+      /* Dark mode support */
+      @media (prefers-color-scheme: dark) {
+        .top-navigation {
+          background: rgba(6, 26, 54, 0.95);
+          border: 1px solid rgba(75, 85, 99, 0.2);
+        }
+        .slide-content {
+          color: #f9fafb;
+        }
+        .bg-pattern {
+          background: linear-gradient(
+            135deg,
+            rgba(41, 170, 227, 0.05) 0%,
+            rgba(76, 175, 80, 0.05) 100%
+          );
+        }
+        .circle-1,
+        .circle-2 {
+          background: linear-gradient(
+            135deg,
+            rgba(41, 170, 227, 0.05) 0%,
+            rgba(76, 175, 80, 0.05) 100%
+          );
+        }
+      }
+
+      /* Print styles */
+      @media print {
+        .top-navigation,
+        .slide-progress,
+        .page-indicator {
+          display: none;
+        }
+        .slide {
+          position: static;
+          opacity: 1;
+          page-break-after: always;
+        }
+        .slide-content {
+          padding: 1rem;
+          max-height: none;
+          overflow: visible;
+        }
+        body {
+          overflow: visible;
+        }
+        .slide-container {
+          overflow: visible;
+        }
+      }
+    </style>
+</head>
+<body>
+  <div class="slide-progress" id="slideProgress"></div>
+  
+  <!-- Top Navigation Component -->
+  <div class="top-navigation">
+    <button onclick="prevSlide()" class="nav-button bg-blue-500 text-white hover:bg-blue-600" title="Previous Slide">
+      <i class="fas fa-chevron-left"></i>
+      Previous
+    </button>
+    <div class="nav-dots">
+      <div class="slide-dot active" onclick="goToSlide(0)"></div>
+      <div class="slide-dot" onclick="goToSlide(1)"></div>
+      <div class="slide-dot" onclick="goToSlide(2)"></div>
+      <div class="slide-dot" onclick="goToSlide(3)"></div>
+      <div class="slide-dot" onclick="goToSlide(4)"></div>
+      <div class="slide-dot" onclick="goToSlide(5)"></div>
+    </div>
+    <button onclick="nextSlide()" class="nav-button bg-green-500 text-white hover:bg-green-600" title="Next Slide">
+      Next
+      <i class="fas fa-chevron-right"></i>
+    </button>
+  </div>
+
+  <div class="slide-container">
+    <div class="slides">
+      <!-- Slide 1 - Introduction -->
+      <div id="slide1" class="slide">
+        <div class="bg-pattern"></div>
+        <div class="circle-1"></div>
+        <div class="circle-2"></div>
+
+        <div class="slide-content p-20">
+          <div class="flex flex-col items-center justify-center mb-12">
+            <a
+              href="{% url 'index' %}"
+              class="flex items-center mb-4"
+            >
+              <img
+                src="{% static 'assets/img/logo.svg' %}"
+                alt="DigInnoCent Logo"
+                class="logo my-8 " style="max-width: 120px; height: auto;"
+              />
+            </a>
+            <h1 class="text-5xl font-bold text-center text-gray-800 mb-4">
+              Digital Innovation Centre
+            </h1>
+            <div class="w-24 h-1 bg-blue-500 mb-6"></div>
+            <p class="text-lg text-gray-600 text-center max-w-3xl">
+              Driving progress through digitalisation and sustainability with
+              a multidisciplinary approach to solve complex technological
+              problems
+            </p>
+          </div>
+
+          <div class="grid grid-cols-4 gap-8 mt-8">
+            <div
+              class="key-aspect bg-white p-6 rounded-lg shadow-lg flex flex-col items-center text-center"
+            >
+              <div
+                class="w-16 h-16 rounded-full bg-blue-500 flex items-center justify-center mb-4"
+              >
+                <i class="fas fa-users text-white text-2xl"></i>
+              </div>
+              <h3 class="text-xl font-bold text-gray-800 mb-2">ABOUT US</h3>
+              <p class="text-gray-600">
+                Innovation-driven organisation transforming cutting-edge ideas
+                into game-changing solutions
+              </p>
+            </div>
+
+            <div
+              class="key-aspect bg-white p-6 rounded-lg shadow-lg flex flex-col items-center text-center"
+            >
+              <div
+                class="w-16 h-16 rounded-full bg-green-500 flex items-center justify-center mb-4"
+              >
+                <i class="fas fa-cogs text-white text-2xl"></i>
+              </div>
+              <h3 class="text-xl font-bold text-gray-800 mb-2">WE CREATE</h3>
+              <p class="text-gray-600">
+                Tailored solutions in research, development, consulting, and
+                project management
+              </p>
+            </div>
+
+            <div
+              class="key-aspect bg-white p-6 rounded-lg shadow-lg flex flex-col items-center text-center"
+            >
+              <div
+                class="w-16 h-16 rounded-full bg-purple-500 flex items-center justify-center mb-4"
+              >
+                <i class="fas fa-lightbulb text-white text-2xl"></i>
+              </div>
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                WE INNOVATE
+              </h3>
+              <p class="text-gray-600">
+                Pioneering technologies and methodologies that shape the
+                future across industries
+              </p>
+            </div>
+
+            <div
+              class="key-aspect bg-white p-6 rounded-lg shadow-lg flex flex-col items-center text-center"
+            >
+              <div
+                class="w-16 h-16 rounded-full bg-yellow-500 flex items-center justify-center mb-4"
+              >
+                <i class="fas fa-rocket text-white text-2xl"></i>
+              </div>
+              <h3 class="text-xl font-bold text-gray-800 mb-2">WE EMPOWER</h3>
+              <p class="text-gray-600">
+                Enabling organisations to achieve their goals through
+                technological excellence
+              </p>
+            </div>
+          </div>
+          <div class="page-indicator">1 / 6</div>
+        </div>
+      </div>
+
+      <!-- Slide 2 - About Us -->
+      <div id="slide2" class="slide">
+        <div class="bg-pattern"></div>
+        <div class="circle-1"></div>
+        <div class="circle-2"></div>
+
+        <div class="slide-content p-20">
+          <!-- Header -->
+          <div class="mb-10">
+            <h1 class="section-title text-4xl font-bold text-gray-800 mb-6">
+              ABOUT US
+            </h1>
+            <p class="text-xl text-gray-600 max-w-3xl">
+              Digital Innovation Centre (DIC) is transforming cutting-edge
+              ideas into game-changing solutions that meet society's needs and
+              surpass market demands.
+            </p>
+          </div>
+
+          <!-- Main Content -->
+          <div class="flex flex-row space-x-12">
+            <!-- Left Column - Company Info -->
+            <div class="w-1/2">
+              <div class="mb-10">
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">
+                  Who We Are
+                </h3>
+                <p class="text-gray-600 mb-4">
+                  Digital Innovation Centre operates legally as:
+                </p>
+                <div class="flex items-center mb-2">
+                  <div
+                    class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center mr-4"
+                  >
+                    <i class="fas fa-building text-white"></i>
+                  </div>
+                  <p>
+                    <span class="font-semibold">UK:</span> Digital InnoCent
+                    Ltd.
+                  </p>
+                </div>
+                <div class="flex items-center">
+                  <div
+                    class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center mr-4"
+                  >
+                    <i class="fas fa-building text-white"></i>
+                  </div>
+                  <p>
+                    <span class="font-semibold">Czech Republic:</span>
+                    DigInnoCent s.r.o.
+                  </p>
+                </div>
+  </div>
+
+              <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">
+                  Our Vision
+                </h3>
+                <p class="text-gray-600">
+                  We invest in the most promising research and development
+                  ideas, driving progress and shaping the future through
+                  innovation and sustainability.
+                </p>
+              </div>
+
+              <div class="flex items-center mt-6">
+                <img
+                  src="{% static 'assets/img/logo.svg' %}"
+                  alt="DigInnoCent Logo"
+                  class="h-12 mr-4"
+                />
+                <p class="text-sm text-gray-500 italic">
+                  Transforming ideas into innovative solutions since our
+                  founding
+                </p>
+          </div>
+            </div>
+
+            <!-- Right Column - Core Features -->
+            <div class="w-1/2">
+              <h3 class="text-2xl font-bold text-gray-800 mb-6">
+                Our Core Focus Areas
+              </h3>
+              <div
+                class="feature-card bg-white p-4 rounded-lg shadow-md mb-4 flex items-start"
+              >
+                <div
+                  class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mr-4 flex-shrink-0"
+                >
+                  <i class="fas fa-leaf text-green-600"></i>
+                </div>
+                <div>
+                  <h4 class="text-lg font-semibold text-gray-800 mb-1">
+                    Sustainability
+                  </h4>
+                  <p class="text-gray-600">
+                    Creating solutions that minimise environmental impact and
+                    promote responsible resource management
+                  </p>
+                </div>
+              </div>
+              <div
+                class="feature-card bg-white p-4 rounded-lg shadow-md mb-4 flex items-start"
+              >
+                <div
+                  class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mr-4 flex-shrink-0"
+                >
+                  <i class="fas fa-laptop-code text-blue-600"></i>
+                </div>
+                <div>
+                  <h4 class="text-lg font-semibold text-gray-800 mb-1">
+                    Digitalisation
+                  </h4>
+                  <p class="text-gray-600">
+                    Implementing advanced technologies to transform business
+                    processes and enhance operational efficiency
+                  </p>
+        </div>
+      </div>
+
+              <div
+                class="feature-card bg-white p-4 rounded-lg shadow-md mb-4 flex items-start"
+              >
+                <div
+                  class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mr-4 flex-shrink-0"
+                >
+                  <i class="fas fa-puzzle-piece text-purple-600"></i>
+          </div>
+            <div>
+                  <h4 class="text-lg font-semibold text-gray-800 mb-1">
+                    Multidisciplinary Approach
+                  </h4>
+                  <p class="text-gray-600">
+                    Integrating diverse expertise to solve complex
+                    technological problems with innovative perspectives
+              </p>
+            </div>
+            </div>
+
+              <div
+                class="feature-card bg-white p-4 rounded-lg shadow-md mb-4 flex items-start"
+              >
+                <div
+                  class="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mr-4 flex-shrink-0"
+                >
+                  <i class="fas fa-lightbulb text-amber-600"></i>
+          </div>
+                <div>
+                  <h4 class="text-lg font-semibold text-gray-800 mb-1">
+                    Innovation-Driven
+                  </h4>
+                  <p class="text-gray-600">
+                    Continuously pushing boundaries to create cutting-edge
+                    solutions that meet real-world needs
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="page-indicator">2 / 6</div>
+        </div>
+      </div>
+
+      <!-- Slide 3 - We Create -->
+      <div id="slide3" class="slide">
+        <div class="bg-pattern"></div>
+        <div class="circle-1"></div>
+        <div class="circle-2"></div>
+
+        <div class="slide-content p-16">
+          <!-- Header -->
+          <div class="mb-8">
+            <h1 class="section-title text-4xl font-bold text-gray-800 mb-6">
+              WE CREATE
+            </h1>
+            <p class="text-xl text-gray-600 max-w-3xl">
+              Comprehensive solutions and expertise tailored to meet the
+              challenges of today's rapidly evolving technological landscape.
+            </p>
+          </div>
+
+          <!-- Main Content -->
+          <div class="grid grid-cols-2 gap-8 mb-6">
+            <!-- Service Area 1 -->
+            <div
+              class="service-card bg-white p-6 rounded-lg shadow-md relative overflow-hidden"
+            >
+              <div class="flex items-start">
+                <div
+                  class="service-icon w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mr-4 flex-shrink-0"
+                >
+                  <i class="fas fa-recycle text-green-600 text-2xl"></i>
+                </div>
+                <div>
+                  <h3 class="text-xl font-bold text-gray-800 mb-2">
+                    Sustainability &amp; Circularity
+                  </h3>
+                  <p class="text-gray-600 mb-3">
+                    Effective solutions for businesses seeking to remain
+                    competitive and responsible in today's changing world.
+                  </p>
+                  <div class="flex flex-wrap gap-2 mt-2">
+                    <span
+                      class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full"
+                      >Safe and Sustainable by Design (SSbD)</span
+                    >
+                    <span
+                      class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full"
+                      >Life Cycle Assessment</span
+                    >
+                    <span
+                      class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full"
+                      >Environmental Impact</span
+                    >
+                    <span
+                      class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full"
+                      >Sustainable Practices</span
+                    >
+                  </div>
+          </div>
+        </div>
+      </div>
+
+            <!-- Service Area 2 -->
+            <div
+              class="service-card bg-white p-6 rounded-lg shadow-md relative overflow-hidden"
+            >
+              <div class="flex items-start">
+                <div
+                  class="service-icon w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mr-4 flex-shrink-0"
+                >
+                  <i class="fas fa-laptop-code text-blue-600 text-2xl"></i>
+                </div>
+                <div>
+                  <h3 class="text-xl font-bold text-gray-800 mb-2">
+                    Digitalisation &amp; IT
+                  </h3>
+                  <p class="text-gray-600 mb-3">
+                    Solutions to help businesses successfully navigate the
+                    major digital transformation of Industry 4.0.
+                  </p>
+                  <div class="flex flex-wrap gap-2 mt-2">
+                    <span
+                      class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full"
+                      >Artificial Intelligence</span
+                    >
+                    <span
+                      class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full"
+                      >Data Analysis</span
+                    >
+                    <span
+                      class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full"
+                      >Digital Transformation</span
+                    >
+                    <span
+                      class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full"
+                      >Degital Twins</span
+                    >
+                    <span
+                      class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full"
+                      >Internet of Things (IoT)</span
+                    >
+                    <span
+                      class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full"
+                      >Cloud Computing</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Service Area 3 -->
+            <div
+              class="service-card bg-white p-6 rounded-lg shadow-md relative overflow-hidden"
+            >
+              <div class="flex items-start">
+                <div
+                  class="service-icon w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center mr-4 flex-shrink-0"
+                >
+                  <i class="fas fa-atom text-purple-600 text-2xl"></i>
+                </div>
+                <div>
+                  <h3 class="text-xl font-bold text-gray-800 mb-2">
+                    Advanced Materials
+                  </h3>
+                  <p class="text-gray-600 mb-3">
+                    Innovative materials and techniques to achieve better
+                    performance, sustainability, and cost-effectiveness.
+                  </p>
+                  <div class="flex flex-wrap gap-2 mt-2">
+                    <span
+                      class="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full"
+                      >Materials R&amp;D</span
+                    >
+                    <span
+                      class="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full"
+                      >Testing</span
+                    >
+                    <span
+                      class="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full"
+                      >Production Solutions</span
+                    >
+                    <span
+                      class="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full"
+                      >Quality Control</span
+                    >
+                    <span
+                      class="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full"
+                      >Sustainable technologies</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Service Area 4 -->
+            <div
+              class="service-card bg-white p-6 rounded-lg shadow-md relative overflow-hidden"
+            >
+              <div class="flex items-start">
+                <div
+                  class="service-icon w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center mr-4 flex-shrink-0"
+                >
+                  <i class="fas fa-chart-line text-amber-600 text-2xl"></i>
+                </div>
+                <div>
+                  <h3 class="text-xl font-bold text-gray-800 mb-2">
+                    Sensing &amp; Monitoring
+                  </h3>
+                  <p class="text-gray-600 mb-3">
+                    Latest technology and AI-driven algorithms for precise
+                    Structural Health Monitoring (SHM) and evaluation.
+                  </p>
+                  <div class="flex flex-wrap gap-2 mt-2">
+                    <span
+                      class="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-full"
+                      >AI Algorithms</span
+                    >
+                    <span
+                      class="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-full"
+                      >Structural Analysis</span
+                    >
+                    <span
+                      class="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-full"
+                      >Maintenance Insights</span
+                    >
+                    <span
+                      class="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-full"
+                      >Predictive Maintenance</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Section -->
+          <div
+            class="bg-gradient-to-r from-blue-500 to-green-500 p-6 rounded-lg text-white"
+          >
+            <div class="flex items-center">
+              <div
+                class="w-12 h-12 bg-white rounded-full flex items-center justify-center mr-4"
+              >
+                <i class="fas fa-check text-blue-500 text-2xl"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold mb-1">Our Service Excellence</h3>
+                <p>
+                  We provide research, development, technology consulting, and
+                  project management tailored to your specific needs and
+                  challenges.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="page-indicator">3 / 6</div>
+        </div>
+      </div>
+
+      <!-- Slide 4 - We Innovate -->
+      <div id="slide4" class="slide">
+        <div class="bg-pattern"></div>
+        <div class="circle-1"></div>
+        <div class="circle-2"></div>
+
+        <div class="slide-content p-16">
+          <!-- Header -->
+          <div class="mb-8">
+            <h1 class="section-title text-4xl font-bold text-gray-800 mb-6">
+              WE INNOVATE
+            </h1>
+            <p class="text-xl text-gray-600 max-w-3xl">
+              Pioneering breakthrough solutions and methodologies that drive
+              the future of technology across multiple industries.
+            </p>
+          </div>
+
+          <!-- Featured Projects Section -->
+          <div class="mb-6">
+            <h3 class="text-2xl font-semibold text-gray-800 mb-4">
+              Groundbreaking Projects
+            </h3>
+            <div class="grid grid-cols-3 gap-4">
+              <!-- Project 1 -->
+              <a
+                href="{% url 'proj_duratrans' %}"
+                class="block"
+              >
+                <div class="project-card shadow-md p-4">
+                  <div
+                    class="bg-purple-600 text-white p-3 rounded-t-lg -mx-4 -mt-4 mb-3"
+                  >
+                    <h4 class="font-bold">DURATRANS</h4>
+                  </div>
+                  <p class="text-gray-600 text-sm mb-2">
+                    Sustainable nanowire-based flexible transparent conductive
+                    surfaces for advanced electronics
+                  </p>
+                  <div class="flex items-center text-purple-600">
+                    <i class="fas fa-microscope mr-2"></i>
+                    <span class="text-xs font-semibold"
+                      >M-ERA.NET Funded</span
+                    >
+            </div>
+          </div>
+              </a>
+
+              <!-- Project 2 -->
+              <a
+                href="{% url 'proj_nature_demo' %}"
+                class="block"
+              >
+                <div class="project-card shadow-md p-4">
+                  <div
+                    class="bg-green-600 text-white p-3 rounded-t-lg -mx-4 -mt-4 mb-3"
+                  >
+                    <h4 class="font-bold">NATURE-DEMO</h4>
+        </div>
+                  <p class="text-gray-600 text-sm mb-2">
+                    Nature-based solutions demonstrating climate resilience in
+                    critical infrastructure
+                  </p>
+                  <div class="flex items-center text-green-600">
+                    <i class="fas fa-leaf mr-2"></i>
+                    <span class="text-xs font-semibold"
+                      >Horizon Europe Funded</span
+                    >
+      </div>
+                </div>
+              </a>
+
+              <!-- Project 3 -->
+              <a
+                href="{% url 'proj_seto' %}"
+                class="block"
+              >
+                <div class="project-card shadow-md p-4">
+                  <div
+                    class="bg-blue-600 text-white p-3 rounded-t-lg -mx-4 -mt-4 mb-3"
+                  >
+                    <h4 class="font-bold">SETO</h4>
+                  </div>
+                  <p class="text-gray-600 text-sm mb-2">
+                    Smart enforcement in transport operations, leveraging
+                    weigh in motion (WIM) technologies
+                  </p>
+                  <div class="flex items-center text-blue-600">
+                    <i class="fas fa-cloud mr-2"></i>
+                    <span class="text-xs font-semibold"
+                      >Horizon Europe Funded</span
+                    >
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <!-- Innovation Areas -->
+          <div class="grid grid-cols-2 gap-8">
+            <!-- Left Section - Innovation Pillars -->
+            <div>
+              <h3 class="text-2xl font-semibold text-gray-800 mb-4">
+                Innovation Pillars
+              </h3>
+
+              <div
+                class="flex items-center mb-3 innovation-pill bg-white p-3 rounded-lg shadow-sm"
+              >
+                <div
+                  class="hexagon w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center mr-3 flex-shrink-0"
+                >
+                  <i class="fas fa-robot text-white"></i>
+                </div>
+                <div>
+                  <h4 class="font-bold text-gray-800">
+                    AI &amp; Computer Vision
+                  </h4>
+                  <p class="text-sm text-gray-600">
+                    Advanced algorithms for structural inspection and
+                    monitoring
+                  </p>
+                </div>
+              </div>
+
+              <div
+                class="flex items-center mb-3 innovation-pill bg-white p-3 rounded-lg shadow-sm"
+              >
+                <div
+                  class="hexagon w-12 h-12 bg-gradient-to-r from-green-500 to-blue-500 flex items-center justify-center mr-3 flex-shrink-0"
+                >
+                  <i class="fas fa-vial text-white"></i>
+                </div>
+                <div>
+                  <h4 class="font-bold text-gray-800">Materials Science</h4>
+                  <p class="text-sm text-gray-600">
+                    Pioneering research in advanced nano materials and
+                    sustainable products
+                  </p>
+                </div>
+              </div>
+
+              <div
+                class="flex items-center mb-3 innovation-pill bg-white p-3 rounded-lg shadow-sm"
+              >
+                <div
+                  class="hexagon w-12 h-12 bg-gradient-to-r from-amber-500 to-red-500 flex items-center justify-center mr-3 flex-shrink-0"
+                >
+                  <i class="fas fa-satellite text-white"></i>
+                </div>
+                <div>
+                  <h4 class="font-bold text-gray-800">Remote Sensing</h4>
+                  <p class="text-sm text-gray-600">
+                    Satellite imaging and InSAR technology for infrastructure
+                    monitoring
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Section - Innovation Impact -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+              <h3 class="text-2xl font-semibold text-gray-800 mb-4">
+                Innovation Impact
+              </h3>
+
+              <div class="flex items-start mb-4">
+                <div
+                  class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-3 flex-shrink-0"
+                >
+                  <i class="fas fa-globe text-green-600"></i>
+                </div>
+                <div>
+                  <h4 class="font-bold text-gray-800">
+                    Environmental Sustainability
+                  </h4>
+                  <p class="text-sm text-gray-600">
+                    Nature-based solutions for climate resilience and reduced
+                    environmental impact
+                  </p>
+                </div>
+              </div>
+              <div class="flex items-start mb-4">
+                <div
+                  class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3 flex-shrink-0"
+                >
+                  <i class="fas fa-industry text-blue-600"></i>
+                </div>
+                <div>
+                  <h4 class="font-bold text-gray-800">
+                    Industry Transformation
+                  </h4>
+                  <p class="text-sm text-gray-600">
+                    Guiding businesses through Industry 4.0 digital
+                    transformation
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex items-start">
+                <div
+                  class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center mr-3 flex-shrink-0"
+                >
+                  <i class="fas fa-handshake text-purple-600"></i>
+                </div>
+                <div>
+                  <h4 class="font-bold text-gray-800">
+                    Strategic Partnerships
+                  </h4>
+                  <p class="text-sm text-gray-600">
+                    Collaborations with universities, research institutions
+                    and industry leaders
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="page-indicator">4 / 6</div>
+        </div>
+      </div>
+
+      <!-- Slide 5 - We Empower -->
+      <div id="slide5" class="slide">
+        <div class="bg-pattern"></div>
+        <div class="circle-1"></div>
+        <div class="circle-2"></div>
+
+        <div class="slide-content p-16">
+          <!-- Header -->
+          <div class="mb-8">
+            <h1 class="section-title text-4xl font-bold text-gray-800 mb-6">
+              WE EMPOWER
+            </h1>
+            <p class="text-xl text-gray-600 max-w-3xl">
+              Enabling organisations and individuals to achieve their fullest
+              potential through technological excellence and innovation.
+            </p>
+          </div>
+
+          <!-- Main Content -->
+          <div class="grid grid-cols-2 gap-8 mb-8">
+            <!-- Left Column - How We Empower -->
+            <div>
+              <h3 class="text-2xl font-semibold text-gray-800 mb-4">
+                How We Empower
+              </h3>
+
+              <div
+                class="empower-card bg-white p-5 rounded-lg shadow-md mb-4"
+              >
+                <div class="flex items-center">
+                  <div
+                    class="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center mr-4"
+                  >
+                    <i
+                      class="fas fa-graduation-cap text-yellow-600 text-xl"
+                    ></i>
+                  </div>
+                  <div>
+                    <h4 class="text-lg font-bold text-gray-800">
+                      Knowledge Transfer
+                    </h4>
+                    <p class="text-gray-600">
+                      Providing training on scientific methodologies and
+                      advanced technologies
+                    </p>
+              </div>
+              </div>
+              </div>
+
+              <div
+                class="empower-card bg-white p-5 rounded-lg shadow-md mb-4"
+              >
+                <div class="flex items-center">
+                  <div
+                    class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mr-4"
+                  >
+                    <i class="fas fa-users-cog text-blue-600 text-xl"></i>
+            </div>
+                  <div>
+                    <h4 class="text-lg font-bold text-gray-800">
+                      Collaborative Innovation
+                    </h4>
+                    <p class="text-gray-600">
+                      Partnering with individuals, organisations, and
+                      institutions to drive progress
+                    </p>
+          </div>
+        </div>
+      </div>
+
+              <div class="empower-card bg-white p-5 rounded-lg shadow-md">
+                <div class="flex items-center">
+                  <div
+                    class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mr-4"
+                  >
+                    <i class="fas fa-tasks text-green-600 text-xl"></i>
+                  </div>
+                  <div>
+                    <h4 class="text-lg font-bold text-gray-800">
+                      Tailored Solutions
+                    </h4>
+                    <p class="text-gray-600">
+                      Creating customised tools and services to meet specific
+                      client requirements
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column - Testimonials -->
+            <div>
+              <h3 class="text-2xl font-semibold text-gray-800 mb-4">
+                Client Testimonials
+              </h3>
+
+              <div
+                class="testimonial-card bg-white p-5 rounded-lg shadow-md mb-4"
+              >
+                <div class="flex mb-3">
+                  <div class="quote-icon">
+                    <i class="fas fa-quote-left"></i>
+                  </div>
+                </div>
+                <p class="text-gray-600 italic mb-3">
+                  "Working with the DIC has been a game-changer for our
+                  organisation. Their cutting-edge technology and visionary
+                  approach have enabled us to achieve our goals and surpass
+                  market demands."
+                </p>
+                <div class="flex items-center">
+                  <div
+                    class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3"
+                  >
+                    <span class="font-bold text-blue-600">PS</span>
+                  </div>
+                  <div>
+                    <h5 class="font-bold text-gray-800">
+                      Dr. Panagiotis Spyridis
+                    </h5>
+                    <p class="text-sm text-gray-500">Professor</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="testimonial-card bg-white p-5 rounded-lg shadow-md">
+                <div class="flex mb-3">
+                  <div class="quote-icon">
+                    <i class="fas fa-quote-left"></i>
+                  </div>
+                </div>
+                <p class="text-gray-600 italic mb-3">
+                  "The Dentist's AI Assistant developed by the DIC has
+                  transformed the way we practice dentistry. Their
+                  cutting-edge technology and patient-centric approach have
+                  enabled us to provide accurate diagnosis and treatment."
+                </p>
+                <div class="flex items-center">
+                  <div
+                    class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-3"
+                  >
+                    <span class="font-bold text-green-600">RM</span>
+                  </div>
+                  <div>
+                    <h5 class="font-bold text-gray-800">Dr. Rami Maroof</h5>
+                    <p class="text-sm text-gray-500">Dentist</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Section - Empowerment Outcomes -->
+          <div class="bg-yellow-800 p-6 rounded-lg text-white">
+            <h3 class="text-xl font-bold mb-3">Empowerment Outcomes</h3>
+            <div class="grid grid-cols-4 gap-4">
+              <div
+                class="bg-white bg-opacity-20 p-3 rounded-lg backdrop-filter backdrop-blur-sm"
+              >
+                <div class="flex items-center justify-center mb-2">
+                  <i class="fas fa-chart-line text-2xl"></i>
+                </div>
+                <p class="text-center text-sm font-semibold">
+                  Improved Business Performance
+                </p>
+              </div>
+
+              <div
+                class="bg-white bg-opacity-20 p-3 rounded-lg backdrop-filter backdrop-blur-sm"
+              >
+                <div class="flex items-center justify-center mb-2">
+                  <i class="fas fa-leaf text-2xl"></i>
+                </div>
+                <p class="text-center text-sm font-semibold">
+                  Enhanced Sustainability
+                </p>
+              </div>
+
+              <div
+                class="bg-white bg-opacity-20 p-3 rounded-lg backdrop-filter backdrop-blur-sm"
+              >
+                <div class="flex items-center justify-center mb-2">
+                  <i class="fas fa-cogs text-2xl"></i>
+                </div>
+                <p class="text-center text-sm font-semibold">
+                  Streamlined Operations
+                </p>
+              </div>
+
+              <div
+                class="bg-white bg-opacity-20 p-3 rounded-lg backdrop-filter backdrop-blur-sm"
+              >
+                <div class="flex items-center justify-center mb-2">
+                  <i class="fas fa-lightbulb text-2xl"></i>
+                </div>
+                <p class="text-center text-sm font-semibold">
+                  Inspired Innovation
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 6 - Connect With Us -->
+      <div id="slide6" class="slide">
+        <div class="bg-pattern"></div>
+        <div class="circle-1"></div>
+        <div class="circle-2"></div>
+
+        <div class="slide-content p-16">
+          <!-- Header -->
+          <div class="mb-6">
+            <h1 class="section-title text-4xl font-bold text-gray-800 mb-6">
+              CONNECT WITH US
+            </h1>
+            <p class="text-xl text-gray-600 max-w-3xl">
+              Join us in our journey of innovation, sustainability, and
+              digital transformation.
+            </p>
+          </div>
+
+          <!-- Summary Section -->
+          <div class="mb-8">
+            <h3 class="text-2xl font-semibold text-gray-800 mb-4">
+              DigInnoCent at a Glance
+            </h3>
+            <div class="grid grid-cols-4 gap-4">
+              <!-- Summary Card 1 -->
+              <div
+                class="summary-card bg-white rounded-lg shadow-md overflow-hidden"
+              >
+                <div class="blue-gradient text-white p-3">
+                  <h4 class="font-bold">ABOUT US</h4>
+                </div>
+                <div class="p-4">
+                  <p class="text-sm text-gray-600">
+                    A multidisciplinary innovation hub focused on
+                    digitalisation and sustainability
+                  </p>
+                </div>
+              </div>
+
+              <!-- Summary Card 2 -->
+              <div
+                class="summary-card bg-white rounded-lg shadow-md overflow-hidden"
+              >
+                <div class="green-gradient text-white p-3">
+                  <h4 class="font-bold">WE CREATE</h4>
+                </div>
+                <div class="p-4">
+                  <p class="text-sm text-gray-600">
+                    Comprehensive solutions across materials, IT,
+                    sustainability and monitoring
+                  </p>
+                </div>
+              </div>
+
+              <!-- Summary Card 3 -->
+              <div
+                class="summary-card bg-white rounded-lg shadow-md overflow-hidden"
+              >
+                <div class="purple-gradient text-white p-3">
+                  <h4 class="font-bold">WE INNOVATE</h4>
+                </div>
+                <div class="p-4">
+                  <p class="text-sm text-gray-600">
+                    Pioneering technologies through groundbreaking research
+                    projects
+                  </p>
+                </div>
+              </div>
+
+              <!-- Summary Card 4 -->
+              <div
+                class="summary-card bg-white rounded-lg shadow-md overflow-hidden"
+              >
+                <div class="yellow-gradient text-white p-3">
+                  <h4 class="font-bold">WE EMPOWER</h4>
+                </div>
+                <div class="p-4">
+                  <p class="text-sm text-gray-600">
+                    Enabling organisations to achieve their fullest potential
+                    through technology
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contact Information and CTA -->
+          <div class="flex space-x-8">
+            <!-- Contact Information -->
+            <div class="w-1/2">
+              <h3 class="text-2xl font-semibold text-gray-800 mb-4">
+                Contact Us
+              </h3>
+              <div
+                class="bg-white bg-opacity-70 backdrop-filter backdrop-blur-sm p-5 rounded-lg"
+              >
+                <h4 class="text-lg font-bold text-gray-800 mb-3">
+                  Locations
+                </h4>
+
+                <!-- UK Address -->
+                <div
+                  class="contact-item flex items-start mb-4 p-2 rounded-md hover:bg-gray-50"
+                >
+                  <div
+                    class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3 flex-shrink-0"
+                  >
+                    <i class="fas fa-map-marker-alt text-blue-600"></i>
+                  </div>
+                  <div>
+                    <h5 class="font-bold text-gray-800">United Kingdom</h5>
+                    <p class="text-sm text-gray-600">
+                      7 Bell Yard, London WC2A 2JR, England
+                    </p>
+                    <p class="text-sm text-gray-600">
+                      22 Leedale Street, Manchester M12 5SH, England
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Czech Address -->
+                <div
+                  class="contact-item flex items-start mb-4 p-2 rounded-md hover:bg-gray-50"
+                >
+                  <div
+                    class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-3 flex-shrink-0"
+                  >
+                    <i class="fas fa-map-marker-alt text-green-600"></i>
+                  </div>
+                  <div>
+                    <h5 class="font-bold text-gray-800">Czech Republic</h5>
+                    <p class="text-sm text-gray-600">
+                      Matouova 48/4, 460 07 Liberec, Czech Republic
+                    </p>
+                    <p class="text-sm text-gray-600">
+                      U Jezu 525/4, 460 01 Liberec, Czech Republic
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Registration -->
+                <div
+                  class="contact-item flex items-start p-2 rounded-md hover:bg-gray-50"
+                >
+                  <div
+                    class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center mr-3 flex-shrink-0"
+                  >
+                    <i class="fas fa-id-card text-purple-600"></i>
+                  </div>
+                  <div>
+                    <h5 class="font-bold text-gray-800">Registration</h5>
+                    <p class="text-sm text-gray-600">
+                      UK Company Number: 14930767
+                    </p>
+                    <p class="text-sm text-gray-600">CZ IČO: 17843537</p>
+                    <p class="text-sm text-gray-600">
+                      EU PIC: 879814639 (UK), 884060135 (CZ)
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Call to Action -->
+            <div class="w-1/2">
+              <h3 class="text-2xl font-semibold text-gray-800 mb-4">
+                Collaborate With Us
+              </h3>
+              <div
+                class="bg-gradient-to-r from-blue-500 to-green-500 text-white p-6 rounded-lg shadow-lg"
+              >
+                <h4 class="text-xl font-bold mb-3">
+                  Ready to Transform Your Ideas?
+                </h4>
+                <p class="mb-5">
+                  Join our network of innovation partners and discover how our
+                  solutions can drive your organization forward.
+                </p>
+
+                <div class="flex flex-col space-y-4">
+                  <div class="flex items-center">
+                    <div
+                      class="w-10 h-10 rounded-full bg-white flex items-center justify-center mr-3"
+                    >
+                      <i class="fas fa-globe text-blue-600"></i>
+                    </div>
+                    <div>
+                      <p class="font-semibold">www.diginnocent.com</p>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center">
+                    <div
+                      class="w-10 h-10 rounded-full bg-white flex items-center justify-center mr-3"
+                    >
+                      <i class="fas fa-envelope text-green-600"></i>
+                    </div>
+                    <div>
+                      <p class="font-semibold">research@diginnocent.com</p>
+                    </div>
+                  </div>
+
+                  <div class="mt-4 flex space-x-4">
+                    <div
+                      class="w-10 h-10 rounded-full bg-white flex items-center justify-center transition transform hover:scale-110"
+                    >
+                      <a
+                        href="https://www.linkedin.com/company/diginnocent-s-r-o/"
+                        ><i class="fab fa-linkedin-in text-blue-600"></i
+                      ></a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-4 text-center">
+                <p class="text-gray-500 italic">
+                  "Transforming cutting-edge ideas into game-changing
+                  innovations that meet society's needs and surpass market
+                  demands."
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="page-indicator">6 / 6</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll(".slide");
+    const dots = document.querySelectorAll(".slide-dot");
+    let autoSlideInterval;
+
+    function showSlide(index) {
+      // Remove active class from all slides and dots
+      slides.forEach((slide, i) => {
+        slide.classList.remove("active");
+        if (dots[i]) dots[i].classList.remove("active");
+      });
+      
+      // Add active class to current slide and dot
+      slides[index].classList.add("active");
+      if (dots[index]) dots[index].classList.add("active");
+      
+      currentSlide = index;
+      
+      // Update page indicator if it exists
+      const pageIndicator = document.querySelector('.page-indicator');
+      if (pageIndicator) {
+        pageIndicator.textContent = `${index + 1} / ${slides.length}`;
+      }
+      
+      // Update progress indicator
+      updateProgress();
+    }
+    
+    function updateProgress() {
+      const progressBar = document.getElementById('slideProgress');
+      if (progressBar) {
+        const progress = ((currentSlide + 1) / slides.length) * 100;
+        progressBar.style.width = `${progress}%`;
+      }
+    }
+
+    function nextSlide() {
+      const next = (currentSlide + 1) % slides.length;
+      showSlide(next);
+    }
+
+    function prevSlide() {
+      const prev = (currentSlide - 1 + slides.length) % slides.length;
+      showSlide(prev);
+    }
+
+    function goToSlide(index) {
+      if (index >= 0 && index < slides.length) {
+        showSlide(index);
+      }
+    }
+
+    function startAutoSlide() {
+      autoSlideInterval = setInterval(() => {
+        nextSlide();
+      }, 5000); // Auto advance every 5 seconds
+    }
+
+    function stopAutoSlide() {
+      if (autoSlideInterval) {
+        clearInterval(autoSlideInterval);
+        autoSlideInterval = null;
+      }
+    }
+
+    // Handle keyboard navigation
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight" || e.key === " ") {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key === "Escape") {
+        stopAutoSlide();
+      }
+    });
+
+    // Handle mouse events for auto-slide control
+    document.addEventListener("mouseenter", stopAutoSlide);
+    document.addEventListener("mouseleave", startAutoSlide);
+
+    // Handle touch/swipe events for mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    document.addEventListener("touchstart", (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+
+    document.addEventListener("touchend", (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    });
+
+    function handleSwipe() {
+      const swipeThreshold = 50;
+      const diff = touchStartX - touchEndX;
+      
+      if (Math.abs(diff) > swipeThreshold) {
+        if (diff > 0) {
+          nextSlide(); // Swipe left - next slide
+        } else {
+          prevSlide(); // Swipe right - previous slide
+        }
+      }
+    }
+
+    // Initialize the first slide and start auto-slide
+    window.addEventListener("load", () => {
+      showSlide(0);
+      startAutoSlide();
+    });
+
+    // Pause auto-slide when page is not visible
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        stopAutoSlide();
+      } else {
+        startAutoSlide();
+      }
+    });
+  </script>
+</body>
+</html>

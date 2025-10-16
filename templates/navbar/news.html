@@ -1,0 +1,198 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>DIC News</title>
+
+  <meta name="description" content="Digital InnoCent Ltd. is a dynamic and visionary company that transforms cutting-edge ideas into game-changing innovations that meet society's needs and surpass market demands." />
+  <meta name="keywords" content="Digitalization, Sustainability, Advanced Materials, Structural Health Monitoring, SME, Consultation, United Kingdom, Czech Republic, life cycle thinking, value chain, safe sustainable by design, industry 4.0, AI, robotics, data-driven, machine learning" />
+
+  <!-- Favicons -->
+  <link href="{% static 'assets/img/favicon.png' %}" rel="icon" />
+  <link href="{% static 'assets/img/apple-touch-icon.png' %}" rel="apple-touch-icon" />
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700|Nunito:300,400,600,700|Poppins:300,400,500,600,700" rel="stylesheet" />
+
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'assets/vendor/aos/aos.css' %}" rel="stylesheet" />
+  <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" />
+  <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet" />
+  <link href="{% static 'assets/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet" />
+  <link href="{% static 'assets/vendor/remixicon/remixicon.css' %}" rel="stylesheet" />
+  <link href="{% static 'assets/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet" />
+
+  <!-- Main CSS File -->
+  <link href="{% static 'assets/css/style.css' %}" rel="stylesheet" />
+</head>
+
+<body>
+  <!-- ======= Header ======= -->
+  {% include 'partials/header.html' %}
+
+  <main id="main">
+    <!-- ======= Breadcrumbs ======= -->
+    <section class="breadcrumbs">
+      <div class="container">
+        <ol>
+          <li><a href="{% url 'index' %}">Home</a></li>
+          <li>News</li>
+        </ol>
+        <h2>DIC News</h2>
+      </div>
+    </section>
+    <!-- End Breadcrumbs -->
+
+    <!-- ======= Blog Section ======= -->
+    <section id="blog" class="blog" data-aos="fade-up">
+      <div class="container">
+        <div class="row">
+          <!-- Blog Entries -->
+          <div class="col-lg-8 entries">
+            {% for article in news %}
+              <article class="entry">
+            
+                <!-- Image -->
+                <div class="entry-img">
+                  <a href="{% url 'news_details' %}?id={{ article.id }}">
+                    <img src="{{ article.images.all.first.image.url }}" 
+                         alt="{{ article.images.all.first.image.alternative_text }}" 
+                         class="img-fluid">
+                  </a>
+                </div>
+            
+                <!-- Title -->
+                <h2 class="entry-title">
+                  <a href="{% url 'news_details' %}?id={{ article.id }}">
+                    {{ article.title }}
+                  </a>
+                </h2>
+            
+                <!-- Meta -->
+                <div class="entry-meta">
+                  <ul>
+                    <li class="d-flex align-items-center">
+                      <i class="bi bi-person"></i>
+                      {{ article.created_by.first_name }} {{ article.created_by.last_name }}
+                    </li>
+                    <li class="d-flex align-items-center">
+                      <i class="bi bi-clock"></i>
+                      <time datetime="{{ article.created_at|date:'Y-m-d' }}">
+                        {{ article.created_at|date:'F d, Y' }}
+                      </time>
+                    </li>
+                  </ul>
+                </div>
+            
+                <!-- Content -->
+                <div class="entry-content">
+                  <p>{{ article.description }}</p>
+                  <div class="read-more">
+                    <a href="{% url 'news_details' %}?id={{ article.id }}">
+                      Read More
+                    </a>
+                  </div>
+                </div>
+            
+              </article>
+              {% endfor %}
+
+            <!-- Pagination -->
+            <div class="blog-pagination">
+              <ul class="justify-content-center">
+                {% if news.has_previous %}
+                  <li>
+                    <a href="{% url 'news' %}?id={{ category.id }}&page={{ news.previous_page_number }}">«</a>
+                  </li>
+                {% endif %}
+            
+                <li class="active"><a href="#">{{ news.number }}</a></li>
+            
+                {% if news.has_next %}
+                  <li>
+                    <a href="{% url 'news' %}?id={{ category.id }}&page={{ news.next_page_number }}">»</a>
+                  </li>
+                {% endif %}
+              </ul>
+            </div>
+          </div>
+          <!-- End Blog Entries -->
+
+        
+          <!-- Sidebar -->
+          <div class="col-lg-4">
+            <div class="sidebar">
+{#              <h3 class="sidebar-title">Search</h3>#}
+{#              <div class="sidebar-item search-form">#}
+{#                <form method="get" action="{% url 'news_search' %}">#}
+{#                  <input type="text" name="q" />#}
+{#                  <button type="submit"><i class="bi bi-search"></i></button>#}
+{#                </form>#}
+{#              </div>#}
+            
+{#              <h3 class="sidebar-title">Categories</h3>#}
+{#              <div class="sidebar-item categories">#}
+{#                <ul>#}
+{#                  {% for category in categories %}#}
+{#                    <li>#}
+{#                      <a href="{% url 'news_category' category.slug %}">#}
+{#                        {{ category.name }} <span>({{ category.count }})</span>#}
+{#                      </a>#}
+{#                    </li>#}
+{#                  {% endfor %}#}
+{#                </ul>#}
+{#              </div>#}
+
+              <h3 class="sidebar-title">Previous Posts</h3>
+              <div class="sidebar-item recent-posts">
+                {% for recent_article in recent_news %}
+                <div class="post-item clearfix">
+                  <img src="{{ recent_article.images.all.first.image.url }}" alt="{{ recent_article.images.all.first.image.alternative_text }}">
+                  <h4>
+                    <a href="{% url 'news_details' %}?id={{ recent_article.id }}">{{ recent_article.title }}</a>
+                  </h4>
+                  <time datetime="{{ recent_article.created_at|date:'Y-m-d' }}">{{ recent_article.created_at|date:'M d, Y' }}</time>
+                </div>
+                {% endfor %}
+              </div>
+            
+{#              <h3 class="sidebar-title">Tags</h3>#}
+{#              <div class="sidebar-item tags">#}
+{#                <ul>#}
+{#                  {% for tag in tags %}#}
+{#                    <li><a href="{% url 'news_tag' tag.slug %}">{{ tag.name }}</a></li>#}
+{#                  {% endfor %}#}
+{#                </ul>#}
+{#              </div>#}
+            
+            </div>
+          </div>
+          <!-- End Sidebar -->
+        
+        
+        </div>
+      </div>
+    </section>
+  
+    <!-- End Blog Section -->
+  </main>
+  <!-- End #main -->
+
+  <!-- ======= Footer ======= -->
+  {% include 'partials/footer.html' %}
+
+  <!-- Vendor JS Files -->
+  <script src="{% static 'assets/vendor/purecounter/purecounter_vanilla.js' %}"></script>
+  <script src="{% static 'assets/vendor/aos/aos.js' %}"></script>
+  <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/glightbox/js/glightbox.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/swiper/swiper-bundle.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/php-email-form/validate.js' %}"></script>
+
+  <!-- Main JS File -->
+  <script src="{% static 'assets/js/main.js' %}"></script>
+</body>
+</html>

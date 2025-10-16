@@ -1,0 +1,132 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+
+    <title>Sustainability</title>
+    <meta content="DigInnoCent s.r.o. is a dynamic and visionary company that transforms cutting-edge ideas into game-changing innovations that meet society's needs and surpass market demands." name="description" />
+    <meta content="Digitalization, Sustainability, Advanced Materials, Structural Health Monitoring, SME, Consultation, Czech Republic, life cycle thinking, value chain, safe sustainable by design, industry 4.0, AI, robotics, data-driven, machine learning" name="keywords" />
+
+    <!-- Favicons -->
+    <link href="{% static 'assets/img/favicon.png' %}" rel="icon" />
+    <link href="{% static 'assets/img/apple-touch-icon.png' %}" rel="apple-touch-icon" />
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700|Nunito:300,400,600,700|Poppins:300,400,500,600,700" rel="stylesheet" />
+
+    <!-- Vendor CSS Files -->
+    <link href="{% static 'assets/vendor/aos/aos.css' %}" rel="stylesheet" />
+    <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" />
+    <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet" />
+    <link href="{% static 'assets/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet" />
+    <link href="{% static 'assets/vendor/remixicon/remixicon.css' %}" rel="stylesheet" />
+    <link href="{% static 'assets/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet" />
+
+    <!-- Main CSS File -->
+    <link href="{% static 'assets/css/style.css' %}" rel="stylesheet" />
+</head>
+
+<body>
+  <!-- ======= Header ======= -->
+  {% include 'partials/header.html' %}
+
+  <main id="main">
+    <!-- ======= Breadcrumbs ======= -->
+    <section class="breadcrumbs">
+      <div class="container">
+        <ol>
+          <li><a href="{% url 'index' %}">Home</a></li>
+          <li>DIC's {{ category.title }} Scheme</li>
+        </ol>
+        <h2>{{ category.title }} Goals</h2>
+      </div>
+    </section>
+    <!-- End Breadcrumbs -->
+
+    <!-- ======= Portfolio Details Section ======= -->
+    <section id="portfolio-details" class="portfolio-details">
+      <div class="container">
+        <div class="row gy-4">
+          <div class="col-lg-8">
+            <div class="portfolio-details-slider swiper">
+              <div class="swiper-wrapper align-items-center">
+                <div class="swiper-slide">
+                  <img src="{% static 'assets/img/research/sus-1.jpg' %}" alt="">
+                </div>
+                <div class="swiper-slide">
+                  <img src="{% static 'assets/img/research/sus-2.jpg' %}" alt="">
+                </div>
+                <div class="swiper-slide">
+                  <img src="{% static 'assets/img/research/sus-3.jpg' %}" alt="">
+                </div>
+              </div>
+              <div class="swiper-pagination"></div>
+              <div class="swiper-button-prev"></div>
+              <div class="swiper-button-next"></div>
+            </div>
+          </div>
+
+          <div class="col-lg-4">
+            <div class="portfolio-description">
+              <h2>Sustainability and Circularity</h2>
+              <p>
+                The DIC understands the importance of sustainability and circularity in today's rapidly changing world.
+                By creating frameworks that examine the direct and indirect effects of our industries, we help organizations to implement sustainable practices.
+              </p>
+              <div class="container btn-related-products">
+                <h1>Related DIC Products:</h1>
+                <a href="{% url 'products_wstrats' %}">
+                  <img src="{% static 'assets/img/prod/product-02-0.png' %}" alt="WStrats">
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="portfolio-description">
+          <h2>Safe Sustainable by Design (SSbD)</h2>
+          <p>
+            Life Cycle Thinking and Sustainability by Design are key approaches to assess and improve sustainability and circularity performance.
+            The DIC utilizes frameworks for SSbD that integrate safety, environmental, social, and economic considerations.
+          </p>
+
+          <h2>Environmental Impact</h2>
+          <p>
+            We evaluate natural resources, energy and water consumption, greenhouse gas emissions, and waste generated throughout the life cycle of a product or service.
+            Using LCA tools, we quantify impacts and identify opportunities for improvement.
+          </p>
+
+          <h2>Economic Impact</h2>
+          <p>
+            We assess costs and benefits of sustainability and circularity initiatives through life cycle costing, cost-benefit analysis, and financial modelling.
+          </p>
+
+          <h2>Social Impact</h2>
+          <p>
+            We analyze impacts on workers, communities, and society, addressing human rights, labour standards, safety, and engagement using social impact assessment tools.
+          </p>
+        </div>
+      </div>
+    </section>
+    <!-- End Portfolio Details Section -->
+  </main>
+  <!-- End #main -->
+
+  <!-- ======= Footer ======= -->
+{#  {% include 'partials/footer.html' %}#}
+
+  <!-- Vendor JS Files -->
+  <script src="{% static 'assets/vendor/purecounter/purecounter_vanilla.js' %}"></script>
+  <script src="{% static 'assets/vendor/aos/aos.js' %}"></script>
+  <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/glightbox/js/glightbox.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/swiper/swiper-bundle.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/php-email-form/validate.js' %}"></script>
+
+  <!-- Main JS File -->
+  <script src="{% static 'assets/js/main.js' %}"></script>
+</body>
+</html>

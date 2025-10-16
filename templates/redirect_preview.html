@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting</title>
+    <script type="text/javascript">
+        window.onload = function() {
+            // فتح الرابط في نافذة جديدة
+{#            var newTab = window.open("{{ preview_url }}", "_blank");#}
+            var newWindow = window.open("{{ preview_url }}", "_blank", "width=800,height=600,left=200,top=200");
+
+
+            // بعد 1 ثانية، العودة للصفحة الحالية
+            setTimeout(function() {
+                window.location.href = window.location.href; // العودة لنفس الصفحة بعد فتح النافذة
+            }, 1000);
+        }
+    </script>
+</head>
+<body>
+{#    <p>Redirecting you to the preview in a new tab...</p>#}
+    <p>Redirecting you to the preview in a new window please allow popup for this site...</p>
+</body>
+</html>

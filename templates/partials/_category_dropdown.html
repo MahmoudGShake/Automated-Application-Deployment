@@ -1,0 +1,20 @@
+<li class="{% if category.subcategories.all %}dropdown{% endif %}">
+    {% if category.type == "news" %}
+  <a href="{% if category.type %}{% url category.type %}?id={{ category.id }}&page=1{% else %}#{% endif %}">
+    {% else %}
+  <a href="{% if category.type %}{% url category.type %}?id={{ category.id }}{% else %}#{% endif %}">
+    {% endif %}
+      <span>{{ category.title }}</span>
+    {% if category.subcategories.all %}
+      <i class="bi bi-chevron-down"></i>
+    {% endif %}
+  </a>
+
+  {% if category.subcategories.all %}
+    <ul>
+      {% for sub in category.subcategories.all %}
+        {% include "partials/_category_dropdown.html" with category=sub %}
+      {% endfor %}
+    </ul>
+  {% endif %}
+</li>

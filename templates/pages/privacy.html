@@ -1,0 +1,137 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+
+  <title>Privacy Policy</title>
+  <meta content="Digital InnoCent Ltd. is a dynamic and visionary company…" name="description" />
+  <meta content="Digitalization, Sustainability, Advanced Materials, Industry 4.0, AI, robotics, SME, UK, Czech Republic" name="keywords" />
+
+  <!-- Favicons -->
+  <link href="{% static 'assets/img/favicon.png' %}" rel="icon" />
+  <link href="{% static 'assets/img/apple-touch-icon.png' %}" rel="apple-touch-icon" />
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700|Nunito:300,400,600,700|Poppins:300,400,500,600,700" rel="stylesheet" />
+
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'assets/vendor/aos/aos.css' %}" rel="stylesheet" />
+  <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" />
+  <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet" />
+  <link href="{% static 'assets/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet" />
+  <link href="{% static 'assets/vendor/remixicon/remixicon.css' %}" rel="stylesheet" />
+  <link href="{% static 'assets/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet" />
+
+  <!-- Main CSS File -->
+  <link href="{% static 'assets/css/style.css' %}" rel="stylesheet" />
+</head>
+
+<body>
+  <!-- ======= Header ======= -->
+  {% include 'partials/header.html' %}
+
+  <main id="main">
+    <!-- ======= Breadcrumbs ======= -->
+    <section class="breadcrumbs">
+      <div class="container">
+        <ol>
+          <li><a href="{% url 'index' %}">Home</a></li>
+          <li>Privacy Policy</li>
+        </ol>
+        <h2>Privacy Policy of DIC</h2>
+      </div>
+    </section>
+    <!-- End Breadcrumbs -->
+
+    <!-- ======= Privacy Content ======= -->
+    <section id="about" class="about">
+      <div class="container justify-content-center" data-aos="fade-up">
+        <h1>Privacy Policy for DIC</h1>
+
+        <p>
+          At Digital Innovation Centre (accessible from www.diginnocent.com) one of our main priorities is the privacy of
+          our visitors. This Privacy Policy document contains types of information that is collected and recorded by DIC and how we use it.
+        </p>
+
+        <h3>Definitions</h3>
+        <ul>
+          <li><strong>Company</strong>: Digital InnoCent Ltd. / DigInnoCent s.r.o.</li>
+          <li><strong>Country</strong>: United Kingdom and Czech Republic</li>
+          <li><strong>Cookies</strong>: small files placed on your device by a website.</li>
+          <li><strong>Device</strong>: any device like a computer, phone, or tablet.</li>
+          <li><strong>Personal Data</strong>: information that relates to an identifiable individual.</li>
+          <li><strong>Service</strong>: refers to the Website.</li>
+          <li><strong>Service Provider</strong>: third-parties processing data on behalf of the Company.</li>
+          <li><strong>Usage Data</strong>: data collected automatically from the Service.</li>
+          <li><strong>Website</strong>: DIC, accessible from www.diginnocent.com</li>
+          <li><strong>You</strong>: the individual accessing or using the Service.</li>
+        </ul>
+
+        <h2>General Data Protection Regulation (GDPR)</h2>
+        <p>
+          We do not collect your information. In case you decided to
+          <a href="{% url 'index' %}#contact">contact us</a>, we will need your name and email to respond to your message.
+        </p>
+        <ul>
+          <li>DIC needs to perform a contract with you</li>
+          <li>You have given DIC permission to do so</li>
+          <li>Processing your personal information is in DIC’s legitimate interests</li>
+          <li>DIC needs to comply with the law</li>
+        </ul>
+
+        <p>
+          DIC will retain your personal information only as long as necessary for the purposes set out in this Privacy Policy.
+        </p>
+
+        <h2>Your Rights (EEA Residents)</h2>
+        <ul>
+          <li>Right to access, update, or delete information we have on you.</li>
+          <li>Right of rectification.</li>
+          <li>Right to object.</li>
+          <li>Right of restriction.</li>
+          <li>Right to data portability.</li>
+          <li>Right to withdraw consent.</li>
+        </ul>
+
+        <h2>Log Files</h2>
+        <p>
+          DIC follows a standard procedure of using log files. These files log visitors when they visit websites…
+        </p>
+
+        <h2>Third Party Privacy Policies</h2>
+        <p>
+          Our Privacy Policy does not apply to other advertisers or websites. Please consult the respective Privacy Policies of these third-party ad servers for more details.
+        </p>
+
+        <h2>Changes to this Privacy Policy</h2>
+        <p>
+          We may update Our Privacy Policy from time to time. Any changes will be posted on this page.
+        </p>
+
+        <h2>Consent</h2>
+        <p>
+          By using our website, you consent to our Privacy Policy and agree to its terms.
+        </p>
+      </div>
+    </section>
+    <!-- End Privacy Content -->
+  </main>
+
+  <!-- ======= Footer ======= -->
+  {% include 'partials/footer.html' %}
+
+  <!-- Vendor JS Files -->
+  <script src="{% static 'assets/vendor/purecounter/purecounter_vanilla.js' %}"></script>
+  <script src="{% static 'assets/vendor/aos/aos.js' %}"></script>
+  <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/glightbox/js/glightbox.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/swiper/swiper-bundle.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/php-email-form/validate.js' %}"></script>
+
+  <!-- Main JS File -->
+  <script src="{% static 'assets/js/main.js' %}"></script>
+</body>
+</html>
