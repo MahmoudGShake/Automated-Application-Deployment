@@ -29,7 +29,8 @@ COPY . /app/
 RUN python manage.py collectstatic --noinput
 
 # Optionally set ownership to www-data (nginx user)
-RUN chown -R www-data:www-data /app/sqlite_media /app/static
+RUN chown -R www-data:www-data /app/sqlite_media /app/static /app/staticfiles
+
 
 # Copy nginx config
 COPY ./deploy/nginx.conf /etc/nginx/sites-available/default
