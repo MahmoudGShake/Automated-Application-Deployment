@@ -11,4 +11,5 @@ services:
     volumes:
       - ./media:/app/media
       - ./static:/app/static
-      - ./db.sqlite3:/app/db.sqlite3  # مهم لحفظ قاعدة البيانات خارج الحاوية
+      - ./db.sqlite3:/app/db.sqlite3
+    command: /bin/sh -c "python manage.py collectstatic --noinput && /usr/bin/supervisord && python manage.py runserver"
