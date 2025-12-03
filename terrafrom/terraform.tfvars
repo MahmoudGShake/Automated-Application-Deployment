@@ -1,0 +1,6 @@
+aws_region         = "us-east-1"
+environment        = "production"
+instance_type      = "t2.micro"
+key_name           = "depi-project"
+my_ip              = "154.182.194.146/32"
+github_repo_url    = "https://github.com/MahmoudGShake/Automated-Application-Deployment.git"

@@ -1,0 +1,18 @@
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+*.tfvars.json
+
+# Secrets
+*.pem
+*.key
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+awscliv2.zip
+
+aws/
