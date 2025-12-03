@@ -1,0 +1,99 @@
+- name: A playbook for installing docker and running the Application
+  hosts: depi-app
+  gather_facts: yes
+  become: yes
+  tasks:
+    - name: Install required packages (Ubuntu)
+      apt:
+        name:
+          - ca-certificates
+          - curl
+          - gnupg
+          - git
+          - lsb-release
+        state: present
+        update_cache: yes
+
+    - name: Create keyrings directory
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Download Docker GPG key
+      get_url:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        dest: /etc/apt/keyrings/docker.asc
+        mode: '0644'
+
+    - name: Get Ubuntu codename
+      shell: . /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}"
+      register: ubuntu_codename
+      changed_when: false
+      check_mode: no
+
+    - name: Add Docker repository
+      copy:
+        dest: /etc/apt/sources.list.d/docker.sources
+        content: |
+          Types: deb
+          URIs: https://download.docker.com/linux/ubuntu
+          Suites: {{ ubuntu_codename.stdout }}
+          Components: stable
+          Signed-By: /etc/apt/keyrings/docker.asc
+        mode: '0644'
+
+    - name: Update apt cache after adding Docker repo
+      apt:
+        update_cache: yes
+
+    - name: Install Docker packages
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: present
+
+    - name: Start and enable Docker service
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Add ubuntu user to docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: yes
+
+    - name: Git checkout
+      ansible.builtin.git:
+        repo: 'https://github.com/MahmoudGShake/Automated-Application-Deployment.git'
+        dest: /opt/diginnocent
+        version: main
+        force: yes
+      become_user: ubuntu
+
+  
+    - name: Start the app with docker compose
+      community.docker.docker_compose_v2:
+        project_src: /opt/diginnocent
+        state: present
+      become_user: ubuntu
+
+    # Optional: Get and display the public IP
+    - name: Get public IP
+      uri:
+        url: http://169.254.169.254/latest/meta-data/public-ipv4
+        return_content: yes
+      register: public_ip
+
+    - name: Display access URLs
+      debug:
+        msg:
+          - "=== Deployment Complete ==="
+          - "Application: http://{{ public_ip.content }}"
+          - "Admin: http://{{ public_ip.content }}/admin"
