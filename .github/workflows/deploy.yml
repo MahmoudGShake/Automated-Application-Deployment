@@ -1,0 +1,39 @@
+name: CD - Deploy Application
+
+on:
+  workflow_run:
+    workflows: ["CI pipeline to build and push Docker images"]
+    types:
+      - completed
+    branches: [ "main" ]
+
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Ansible
+        run: |
+          sudo apt update
+          sudo apt install -y software-properties-common
+          sudo add-apt-repository --yes --update ppa:ansible/ansible
+          sudo apt install -y ansible
+
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy with Ansible
+        run: |
+          ansible-playbook -i ansible/inventory.yml ansible/playbook \
+            --extra-vars "image_tag=${{ github.event.workflow_run.head_sha }}"

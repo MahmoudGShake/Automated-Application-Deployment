@@ -3,7 +3,7 @@ all:
     depi-app:
       ansible_host: <replace with the public ip of the ec2 instance>
       ansible_user: ubuntu
-      ansible_ssh_private_key_file: <replace with the path to the private key file>
+      ansible_ssh_private_key_file: ~/.ssh/id_rsa
       ansible_python_interpreter: /usr/bin/python3
       ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
 
