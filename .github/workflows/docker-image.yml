@@ -2,7 +2,7 @@ name: CI pipeline to build and push Docker images
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "feature/EhabEdits" ]
   pull_request:
     branches: [ "main" ]
 
