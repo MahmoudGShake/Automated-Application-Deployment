@@ -36,3 +36,23 @@ jobs:
           IMAGE_NAME_LOWER=$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
           docker push $IMAGE_NAME_LOWER:latest
           docker push $IMAGE_NAME_LOWER:${{ github.sha }}
+          
+      - name: Install Ansible
+        run: |
+          sudo apt update
+          sudo apt install -y software-properties-common
+          sudo add-apt-repository --yes --update ppa:ansible/ansible
+          sudo apt install -y ansible
+  
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+  
+      - name: Deploy with Ansible
+        run: |
+          IMAGE_NAME_LOWER=$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
+          ansible-playbook -i ansible/inventory.yml ansible/playbook.yaml \
+          --extra-vars "image_name=$IMAGE_NAME_LOWER image_tag=${{ github.event.workflow_run.head_sha }}"
