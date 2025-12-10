@@ -13,14 +13,10 @@
           - git
           - lsb-release
           - python3-pip
+          - python3-docker
         state: present
         update_cache: yes
-
-    - name: Install Docker Python library
-      pip:
-        name: docker
-        state: present
-
+        
     - name: Create keyrings directory
       file:
         path: /etc/apt/keyrings
