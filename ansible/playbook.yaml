@@ -1,7 +1,8 @@
 - name: A playbook for installing docker and running the Application
-  hosts: depi-app
+  hosts: all  # Changed from depi-app
   gather_facts: yes
   become: yes
+  
   tasks:
     - name: Install required packages (Ubuntu)
       apt:
@@ -11,8 +12,14 @@
           - gnupg
           - git
           - lsb-release
+          - python3-pip
         state: present
         update_cache: yes
+
+    - name: Install Docker Python library
+      pip:
+        name: docker
+        state: present
 
     - name: Create keyrings directory
       file:
@@ -63,18 +70,21 @@
         state: started
         enabled: yes
 
-    - name: Add ubuntu user to docker group
+    - name: Add current user to docker group
       user:
-        name: ubuntu
+        name: "{{ ansible_user }}"
         groups: docker
         append: yes
+
+    - name: Reset SSH connection for group changes
+      meta: reset_connection
 
     - name: Create application directory
       file:
         path: /opt/diginnocent
         state: directory
-        owner: ubuntu
-        group: ubuntu
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
         mode: '0755'
 
     - name: Git checkout
@@ -83,26 +93,26 @@
         dest: /opt/diginnocent
         version: main
         force: yes
-      become_user: ubuntu
+      become_user: "{{ ansible_user }}"
 
     - name: Login to GitHub Container Registry
       community.docker.docker_login:
         registry_url: ghcr.io
-        username: ${{ github.actor }}
+        username: "{{ github_actor }}"
         password: "{{ github_token }}"
         reauthorize: yes
-      become_user: ubuntu
+      become_user: "{{ ansible_user }}"
 
     - name: Create .env file
       copy:
         dest: /opt/diginnocent/.env
         content: |
           DEBUG=False
-          SECRET_KEY={{ lookup('env', 'DJANGO_SECRET_KEY') | default('change-me-in-production', true) }}
+          SECRET_KEY={{ django_secret_key | default('change-me-in-production', true) }}
           ALLOWED_HOSTS=*
           DATABASE_URL=sqlite:///db.sqlite3
-        owner: ubuntu
-        group: ubuntu
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
         mode: '0600'
 
     - name: Pull latest Docker image
@@ -111,13 +121,13 @@
         tag: "{{ image_tag }}"
         source: pull
         force_source: yes
-      become_user: ubuntu
+      become_user: "{{ ansible_user }}"
 
     - name: Stop existing containers
       community.docker.docker_compose_v2:
         project_src: /opt/diginnocent
         state: absent
-      become_user: ubuntu
+      become_user: "{{ ansible_user }}"
       ignore_errors: yes
 
     - name: Start the app with docker compose
@@ -125,7 +135,21 @@
         project_src: /opt/diginnocent
         state: present
         pull: always
-      become_user: ubuntu
+      become_user: "{{ ansible_user }}"
       environment:
         IMAGE_NAME: "{{ image_name }}"
         IMAGE_TAG: "{{ image_tag }}"
+
+    - name: Wait for application to be healthy
+      uri:
+        url: "http://localhost:80"
+        status_code: 200
+      register: result
+      until: result.status == 200
+      retries: 5
+      delay: 10
+      ignore_errors: yes
+
+    - name: Display deployment status
+      debug:
+        msg: "Deployment completed. App should be accessible at http://{{ ansible_host }}"
