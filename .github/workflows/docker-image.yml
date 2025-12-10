@@ -24,10 +24,10 @@ jobs:
       - name: Build Docker image
         run: |
           IMAGE_NAME=$(echo "ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
-          docker build -t $IMAGE_NAME:demo -t $IMAGE_NAME:${{ github.sha }} .
+          docker build -t $IMAGE_NAME:demo  .
 
       - name: Push Docker image
         run: |
           IMAGE_NAME=$(echo "ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
           docker push $IMAGE_NAME:demo
-          docker push $IMAGE_NAME:${{ github.sha }}
+
