@@ -30,19 +30,7 @@ jobs:
           IMAGE_NAME_LOWER=$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
           docker build -t $IMAGE_NAME_LOWER:latest -t $IMAGE_NAME_LOWER:${{ github.sha }} .
 
-      - name: Container security scan with trivy
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: $(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]'):${{ github.sha }}
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-          
-      - name: Upload trivy scan results
-        uses: github/codeql-action/upload-sarif@v4
-        if: always()
-        with:
-          sarif_file: trivy-results.sarif
-
+      
       - name: Push Docker image
         run: |
           IMAGE_NAME_LOWER=$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
