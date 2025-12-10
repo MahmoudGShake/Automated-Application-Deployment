@@ -25,11 +25,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy project files
 COPY . /app/
 
-# Collect static files
-#RUN python manage.py collectstatic --noinput
+# # Collect static files
+# RUN python manage.py collectstatic --noinput
 
-# Optionally set ownership to www-data (nginx user)
-RUN chown -R www-data:www-data /app/sqlite_media /app/static /app/staticfiles
+# # Optionally set ownership to www-data (nginx user)
+# RUN chown -R www-data:www-data /app/sqlite_media /app/static /app/staticfiles
 
 
 # Copy nginx config
