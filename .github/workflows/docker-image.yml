@@ -48,5 +48,5 @@ jobs:
       - name: Deploy with Ansible
         run: |
           IMAGE_NAME_LOWER=$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
-          ansible-playbook -i "${{ secrets.SERVER_HOST }}," ansible/playbook.yaml \
-            --extra-vars "image_name=$IMAGE_NAME_LOWER image_tag=${{ github.sha }}"
+          ansible-playbook -i "${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}," ansible/playbook.yaml \
+            --extra-vars "image_name=$IMAGE_NAME_LOWER image_tag=${{ github.sha }} github_actor=${{ github.actor }} github_token=${{ secrets.GITHUB_TOKEN }}"
