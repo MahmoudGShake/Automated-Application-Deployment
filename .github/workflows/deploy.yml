@@ -5,7 +5,7 @@ on:
     workflows: ["CI pipeline to build and push Docker images"]
     types:
       - completed
-    branches: [ "main" ]
+    branches: [ "main", "feature/EhabEdits" ]
 
 env:
   IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}
@@ -35,5 +35,6 @@ jobs:
 
       - name: Deploy with Ansible
         run: |
-          ansible-playbook -i ansible/inventory.yml ansible/playbook \
-            --extra-vars "image_tag=${{ github.event.workflow_run.head_sha }}"
+          IMAGE_NAME_LOWER=$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
+          ansible-playbook -i ansible/inventory.yml ansible/playbook.yaml \
+          --extra-vars "image_name=$IMAGE_NAME_LOWER image_tag=${{ github.event.workflow_run.head_sha }}"
