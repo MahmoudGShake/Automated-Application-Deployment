@@ -60,15 +60,9 @@
           - docker-compose-plugin
         state: present
 
-    - name: Start and enable Docker service
-      systemd:
-        name: docker
-        state: started
-        enabled: yes
-
-    - name: Add current user to docker group
+    - name: Add ubuntu user to docker group
       user:
-        name: "{{ ansible_user }}"
+        name: "ubuntu"
         groups: docker
         append: yes
 
@@ -79,8 +73,8 @@
       file:
         path: /opt/diginnocent
         state: directory
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
+        owner: "ubuntu"
+        group: "ubuntu"
         mode: '0755'
 
     - name: Git checkout
@@ -89,7 +83,7 @@
         dest: /opt/diginnocent
         version: main
         force: yes
-      become_user: "{{ ansible_user }}"
+      become_user: "ubuntu"
 
     - name: Login to GitHub Container Registry
       community.docker.docker_login:
@@ -97,7 +91,7 @@
         username: "{{ github_actor }}"
         password: "{{ github_token }}"
         reauthorize: yes
-      become_user: "{{ ansible_user }}"
+      become_user: "ubuntu"
 
     - name: Create .env file
       copy:
@@ -107,8 +101,8 @@
           SECRET_KEY={{ django_secret_key | default('change-me-in-production', true) }}
           ALLOWED_HOSTS=*
           DATABASE_URL=sqlite:///db.sqlite3
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
+        owner: "ubuntu"
+        group: "ubuntu"
         mode: '0600'
 
     - name: Pull latest Docker image
@@ -117,13 +111,13 @@
         tag: "{{ image_tag }}"
         source: pull
         force_source: yes
-      become_user: "{{ ansible_user }}"
+      become_user: "ubuntu"
 
     - name: Stop existing containers
       community.docker.docker_compose_v2:
         project_src: /opt/diginnocent
         state: absent
-      become_user: "{{ ansible_user }}"
+      become_user: "ubuntu"
       ignore_errors: yes
 
     - name: Start the app with docker compose
@@ -131,7 +125,7 @@
         project_src: /opt/diginnocent
         state: present
         pull: always
-      become_user: "{{ ansible_user }}"
+      become_user: "ubuntu"
       environment:
         IMAGE_NAME: "{{ image_name }}"
         IMAGE_TAG: "{{ image_tag }}"
