@@ -42,6 +42,6 @@ COPY ./deploy/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 EXPOSE 8000
 
 # Start supervisor (runs gunicorn + nginx)
-CMD ["/usr/bin/supervisord"]
+CMD ["python manage.py runserver"]
 #docker build -t diginnocent .
 #docker run -d -p 80:80 diginnocent
